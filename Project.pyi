@@ -28,11 +28,11 @@ class MonitorDict(TypedDict):
     sliderMax: Optional[float]
     isDiscrete: Optional[bool]
 
-ValueInput = List[int, List[int , Any]]
-CodeInput = List[int, str, List[int , Any]]
-FieldInput = List[int, str, ...]
+ValueInput = List[int, List[int , Any]] # type: ignore
+CodeInput = List[int, str, List[int , Any]] # type: ignore
+FieldInput = List[int, str, ...] # type: ignore
 InputsDict = Dict[str, Union[ValueInput, CodeInput, FieldInput]]
-FieldsDict = Dict[str, List[str, Optional[str]]]
+FieldsDict = Dict[str, List[str, Optional[str]]] # type: ignore
 
 class BlockDict(TypedDict):
     opcode: str
@@ -45,8 +45,8 @@ class BlockDict(TypedDict):
     comment: Optional[str]
     mutation: Optional[dict]
 
-VariablesDict = Dict[str, List[str, Any]]
-ListsDict = Dict[str, List[str, Any]]
+VariablesDict = Dict[str, List[str, Any]] # type: ignore
+ListsDict = Dict[str, List[str, Any]] # type: ignore
 BroadcastsDict = Dict[str, str]
 BlocksDict = Dict[str, BlockDict]
 

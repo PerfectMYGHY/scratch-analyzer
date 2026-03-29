@@ -1,0 +1,16 @@
+# 虚拟环境
+.venv/
+
+# PyCharm
+.idea/
+
+# VS & VSCode
+.vscode/
+.vs/
+
+# Python
+__pycache__/
+
+# 生成的代码
+output/
+out/

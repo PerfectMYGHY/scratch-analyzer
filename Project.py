@@ -14,24 +14,6 @@ class Input(object):
         self.name = name
 
     def toCode(self, translator, func_name, procedures_prototypes):
-        # if len(self.data) == 2:
-        #     if isinstance(self.data[1], list):
-        #         value = self.data[1][1]
-        #         code = toCode(value)
-        #     else:
-        #         try:
-        #             fieldBlock = self.target.blocks[self.data[1]]
-        #             field = fieldBlock.fields[self.name]
-        #             code = field.toCode(translator)
-        #         except KeyError: # 代表其指向积木块
-        #             blockId = self.data[1]
-        #             code, _ = self.target.blocks[blockId].toCode(translator, 1, func_name, procedures_prototypes)
-        # else:
-        #     blockId = self.data[1]
-        #     try:
-        #         code, _ = self.target.blocks[blockId].toCode(translator, 1, func_name, procedures_prototypes)
-        #     except TypeError:
-        #         raise TypeError(f"target: {self.target}\n\nblocks:{self.target.blocks}")
         if isinstance(self.data[1], str):
             try:
                 fieldBlock = self.target.blocks[self.data[1]]
@@ -45,15 +27,6 @@ class Input(object):
                     code = f'Scratch.getVariable(instance, "{self.data[1]}")'
         elif self.data[1]:
             value = self.data[1][1]
-            # code = toCode(value)
-            # hasVariable = False
-            # for vid, variable in self.target.variables.items():
-            #     if variable[0] == value:
-            #         code = f'Scratch.getVariable(instance, "{value}")'
-            #         hasVariable = True
-            #         break
-            # if not hasVariable:
-            #     code = toCode(value)
             code = f"!!![SPECIAL_CODE_TO_GLOBAL][{value}]!!!"
         else:
             code = '""'
@@ -73,7 +46,7 @@ class Block(object):
         try:
             self.opcode = block["opcode"]
         except TypeError:
-            raise TypeError(f"block: {block}\n\n{target._blocks}\n\n{k}")
+            raise TypeError(f"block: {block}\n\n{target._blocks}")
         self._next = block["next"]
         self.next = None
         self._parent = block.get("parent")
@@ -284,7 +257,7 @@ class Project(object):
 
     def _parse(self):
         if self.project.get("extensionURLs"):
-            raise UnsupportedError("不支持自定义URL扩展！（此项目可能来自TurboWarp）")
+            raise UnsupportedError("暂不支持自定义URL扩展！（此项目可能来自TurboWarp）")
         self.meta = Meta(self.project["meta"])
         self.extensions = {}
         if self.project["extensions"]:
@@ -292,7 +265,7 @@ class Project(object):
                 self.extensions[name] = Extension(name)
         self.monitors = {}
         if self.project["monitors"]:
-            for monitor in ColoredTqdm(self.project["monitors"], desc="处理监视器中", unit="个"):
+            for monitor in ColoredTqdm(self.project["monitors"], desc="处理变量监视器中", unit="个"):
                 self.monitors[monitor["id"]] = Monitor(monitor)
         self.targets = {}
         if self.project["targets"]:

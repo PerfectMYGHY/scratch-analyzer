@@ -7,10 +7,13 @@ from typing import Dict, List
 import re
 from Cast import toCode
 import shutil
+from pathlib import Path
+
+
+root_path = Path(__file__).parent
 
 
 def replaceName(name: str):
-    # return name.replace(" ", "_").replace("/", "_").replace("\\", "_")
     result = ""
     allowed_chars = "abcdefghijklmnopqrstuvwxyz_1234567890"
     for idx, char in enumerate(name):
@@ -229,7 +232,7 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
             data += self.toCodeFrom(func) + "\n"
 
         # 添加主程序
-        with open("codeMain.py", "r", encoding="utf-8") as file:
+        with open(root_path / "codeMain.tpl", "r", encoding="utf-8") as file:
             codeMain = file.read().replace("""import Scratch4Python as Scratch
 """, "")
         data += codeMain.format(name=self.name, variables=self.getVariablesDict(), x=self.target.x, y=self.target.y,
@@ -256,6 +259,7 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
 
         for key, value in first_prcesses:
             hasVariable = False
+            code = None
             for vid, variable in self.target.variables.items():
                 if variable[0] == value:
                     code = f'Scratch.getVariable(instance, "{value}")'
@@ -270,6 +274,8 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
                             break
                 if not hasVariable:
                     code = toCode(value)
+            if code is None:
+                raise ValueError(f"无法处理的特殊全局替换请求！value=`{value}`")
             data = data.replace(f'!!![{key}][{value}]!!!', code)  # 替换
 
         # 其次检查其他请求
@@ -403,11 +409,7 @@ class Scratch(object):
             # 开始生成舞台文件
             target_file.generate(output, stage=stage)
         # 复制标准库
-        # with open("Scratch4Python.py", "r", encoding="utf-8") as ifile, open(output / "Scratch4Python.py", "w", encoding="utf-8") as ofile:
-        #     ofile.write(ifile.read())
-        # with open("AudioController.py", "r", encoding="utf-8") as ifile, open(output / "AudioController.py", "w", encoding="utf-8") as ofile:
-        #     ofile.write(ifile.read())
-        shutil.copytree("Scratch4Python", output / "Scratch4Python")
+        shutil.copytree(root_path / "Scratch4Python", output / "Scratch4Python")
         with open("audio_ui.html", "r", encoding="utf-8") as ifile, open(output / "audio_ui.html", "w", encoding="utf-8") as ofile:
             ofile.write(ifile.read())
         # 生成数据
@@ -420,5 +422,5 @@ class Scratch(object):
             inits += "{name}_init, ".format(name=name)
         inits += "]"
         # 生成并复制主程序
-        with open("progMain.py", "r", encoding="utf-8") as ifile, open(output / "main.py", "w", encoding="utf-8") as ofile:
+        with open(root_path / "progMain.tpl", "r", encoding="utf-8") as ifile, open(output / "main.py", "w", encoding="utf-8") as ofile:
             ofile.write(ifile.read().format(imports=imports_code, inits=inits))
