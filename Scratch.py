@@ -20,7 +20,7 @@ def replaceName(name: str):
         if idx == 0 and char in "1234567890":
             result += "n"
         if char.lower() not in allowed_chars:
-            result += "_"
+            result += f"ord_{ord(char)}_" # 不必一_开始，因为保证最后一个字符以_结束
         else:
             result += char
     return result
