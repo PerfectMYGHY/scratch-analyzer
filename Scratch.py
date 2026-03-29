@@ -408,10 +408,6 @@ class Scratch(object):
                     target_file.entries.append(block)
             # 开始生成舞台文件
             target_file.generate(output, stage=stage)
-        # 复制标准库
-        shutil.copytree(root_path / "Scratch4Python", output / "Scratch4Python")
-        with open("audio_ui.html", "r", encoding="utf-8") as ifile, open(output / "audio_ui.html", "w", encoding="utf-8") as ofile:
-            ofile.write(ifile.read())
         # 生成数据
         imports_code = ""
         inits = "["

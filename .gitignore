@@ -14,3 +14,6 @@ __pycache__/
 # 生成的代码
 output/
 out/
+
+# 测试用的Scratch文件
+*.sb3
