@@ -5,6 +5,7 @@ from iostream import ColoredTqdm
 from Cast import toCode
 from public import substack_opcodes, substack_opcodes_need_flush
 import json
+import warnings
 
 
 class Input(object):
@@ -46,7 +47,7 @@ class Block(object):
         try:
             self.opcode = block["opcode"]
         except TypeError:
-            raise TypeError(f"block: {block}\n\n{target._blocks}")
+            raise TypeError(f"非法block，没有opcode！: {block}\n\n{target._blocks}")
         self._next = block["next"]
         self.next = None
         self._parent = block.get("parent")
@@ -91,7 +92,8 @@ class Block(object):
             try:
                 code = getattr(translator, self.opcode)
             except AttributeError:
-                raise UnsupportedError("不支持的积木操作代码： %s" % self.opcode)
+                warnings.warn("不支持的积木操作代码： %s，若警告不会停止则默认继续转换（无法翻译的代码将以注释替代！）" % self.opcode)
+                code = f"raise RuntimeError('未成功翻译的代码，操作代码：{self.opcode}，请手动翻译！') # !!!不支持的积木操作代码： {self.opcode}，请手动翻译！！！"
             # 自定义函数执行的特殊处理
             if self.opcode == "procedures_call":
                 code = (code.replace("%[FUNC_NAME]%", "!!![FUNC_NAME_TO_GLOBAL][{proccode}]!!!".format(proccode=self.data["mutation"]["proccode"]))
@@ -115,7 +117,8 @@ class Block(object):
             try:
                 code = getattr(translator, self.opcode)  # 获取主体代码
             except AttributeError:
-                raise UnsupportedError("不支持的积木操作代码： %s" % self.opcode)
+                warnings.warn("不支持的积木操作代码： %s，若警告不会停止则默认继续转换（无法翻译的代码将以注释替代！）" % self.opcode)
+                code = f"raise RuntimeError('未成功翻译的代码，操作代码：{self.opcode}，请手动翻译！') # !!!不支持的积木操作代码： {self.opcode}，请手动翻译！！！"
             # 将参数格式化进去
             for name, inp in self.inputs.items():
                 if name in ("SUBSTACK", "SUBSTACK2"):
@@ -242,7 +245,7 @@ class Monitor(object):
 class Extension(object):
     def __init__(self, extension):
         if extension not in ("pen", ):
-            raise UnsupportedError("暂不支持扩展：%s" % extension)
+            warnings.warn("暂不支持扩展：%s，若警告不会停止则默认继续转换" % extension)
 
 class Meta(object):
     def __init__(self, meta):
@@ -257,7 +260,7 @@ class Project(object):
 
     def _parse(self):
         if self.project.get("extensionURLs"):
-            raise UnsupportedError("暂不支持自定义URL扩展！（此项目可能来自TurboWarp）")
+            warnings.warn("项目中包含自定义URL扩展，可能来自TurboWarp，当前版本不支持解析这些扩展，相关积木将无法转换！")
         self.meta = Meta(self.project["meta"])
         self.extensions = {}
         if self.project["extensions"]:
