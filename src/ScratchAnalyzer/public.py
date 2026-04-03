@@ -2,7 +2,8 @@ from pathlib import Path
 
 
 supported_languages = [
-    "python"
+    "python",
+    "python-pcode"
 ]
 
 head_block_opcodes = [

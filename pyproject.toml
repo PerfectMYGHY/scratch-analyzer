@@ -14,7 +14,8 @@ authors = [
 requires-python = ">=3.8"
 dependencies = [
     "colorama==0.4.6",
-    "tqdm==4.67.3"
+    "tqdm==4.67.3",
+    "json5==0.14.0"
 ]
 
 [project.urls]
@@ -26,6 +27,7 @@ analyze-scratch = "ScratchAnalyzer.__main__:main"  # 命令行入口
 [tool.setuptools.package-data]
 ScratchAnalyzer = [
     "assets/*.json",           # 包含所有 JSON 文件
+    "assets/*.json5",          # 包含所有 JSON5 文件
     "assets/*.tpl"             # 包含模板文件
 ]
 

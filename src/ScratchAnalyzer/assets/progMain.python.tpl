@@ -1,5 +1,5 @@
 """
-本代码有Scratch2Python生成
+本代码由ScratchAnalyzer生成
 """
 # 引入各个角色
 {imports}

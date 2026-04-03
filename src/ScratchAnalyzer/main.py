@@ -10,13 +10,14 @@ from pathlib import Path
 from .iostream import ForeLightRed, ForeLightGreen, StartLightRed, Reset, ColoredTqdm
 from .Project import Project
 from .Scratch import Scratch
+from .public import supported_languages
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", "-i", type=str, required=True, help="输入文件（必须是Scratch3.0文件）")
     parser.add_argument("--output", "-o", type=str, required=True, help="输出目录")
-    parser.add_argument("--language", "-l", default="python", choices=["python", "java"], type=str, required=False, help="转换成的语言")
+    parser.add_argument("--language", "-l", default="python-pcode", choices=supported_languages, type=str, required=False, help="转换成的语言")
     args = parser.parse_args()
 
     if os.path.isfile(args.output):
@@ -63,7 +64,7 @@ def main() -> int:
 
     # 步骤4：生成数据
     scratch = Scratch(project)
-    scratch.generate(Path(args.output))
+    scratch.generate(Path(args.output), language=args.language)
 
     return 0
 
