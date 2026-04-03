@@ -1,58 +1,76 @@
 # scratch-analyzer
 
-Chinese version README.md: [README.md](README.md)
+中文版 README.md: [README.chinese.md](README.chinese.md)
 
-A Scratch parsing library — a Python package for analyzing and processing Scratch project data.
+A Scratch parsing library. A Python package capable of analyzing Scratch code.
 
 ## Introduction
 
 ### History
 
-The core code was written in 2025 (one year before this repository was published). Back then I wanted to translate Scratch projects into programs runnable on Python, so I started this project originally named `Scratch2Python`.
+The core code was written in 2025 (1 year before the repository was published). At that time, I had a dream: to translate Scratch into a runnable Python program. So I wrote this program, originally named `Scratch2Python`.
 
-I implemented Scratch-to-Python translation in `Scratch2Python`. The code was a bit rough, but the translation worked well.
+I ~~with my astonishing wisdom~~ implemented the Scratch-to-Python code conversion feature. Although the code is a bit messy, the conversion was quite successful.
 
-The main challenge after that was the Scratch runtime. As the project history shows, I attempted to use `Scratch4Python` as the runtime library, but after several months of work I couldn't make it reliably work.
+However, the next problem was the Scratch runtime. From the code history you can see that this project ultimately used `Scratch4Python` as the runtime library. Unfortunately, after spending several months on it, I ultimately failed.
 
-### Why this project exists
+### Why does this library exist?
 
-The translator itself remains useful: in theory it could be adapted to target multiple languages, although currently only Python output is fully supported.
+Because my translator is still very good. Theoretically, it can be extended to translate into various languages, although currently only Python conversion is guaranteed to work.
 
-I decided to extract and preserve the translation functionality as a standalone package and publish it in this repository.
+I think this feature is quite valuable, so I created this repository and extracted the code conversion functionality separately.
 
 ### What about Scratch4Python?
 
-I don't plan to abandon it entirely, but I need more time to study OpenGL. When I'm ready I'll release it as a separate library under the name `python-scratch-vm`. At that point the two projects can be used together.
+I don't plan to abandon it completely, but please wait for me to study for a few more years and fully understand OpenGL before I revisit it. I plan to release it as an independent library at that time, renamed to `python-scratch-vm`. At that point, the two libraries can be used together.
+
+### Directory Structure
+
+```folder
+├── docs # Documentation folder
+│   ├── README.chinese.md # Chinese documentation
+│   └── README.english.md # English documentation
+├── LICENSE # MIT
+├── pyproject.toml # Project configuration
+├── README.md -> docs/README.chinese.md # README symlink
+├── requirements.txt # Requirements file
+└── src # Source code
+    └── ScratchAnalyzer # Package directory
+```
 
 ## Usage
 
-After downloading the package, the import name is not finalized; examples below use `ScratchAnalyzer`.
+After downloading the package, the package name is `ScratchAnalyzer`.
 
-### Prepare
+### Preparation
 
-Prepare the Scratch project's `project.json`: rename the `.sb3` file to `.zip` and unzip it to obtain the asset files and `project.json`. Analysis only requires `project.json`, but if you want to run the project you should also include the asset files.
+First, prepare the `project.json` of the Scratch project. Change the Scratch file extension to `.zip`, then unzip it to get the asset files and `project.json`. For analysis, you only need `project.json`, but if you need to run it, please also include the asset files.
 
-### Analyze
+### Analysis
 
-Assuming your environment is ready, use the library as follows:
+Assuming the environment is ready, use the following method:
 
 ```python
 from ScratchAnalyzer import Project, Scratch
 import json
 from pathlib import Path
 
-# 1. Load the project.json as a dictionary
-with open("project.json", "r", encoding="utf-8") as f:
-    data = json.load(f)
+# 1. Read the file, need to parse it as a dictionary
+with open("project.json", "r", encoding="utf-8") as file: # Use UTF-8 to ensure no encoding errors
+    data = json.load(file)
 
-# 2. Create a Project object — this builds the code analysis tree and stores project metadata
+# 2. Create a Project object, automatically build the code analysis tree, and store project metadata
 project = Project(data)
 
-# 3. Create a Scratch object — this analyzes assets and other metadata
-scratch = Scratch(project)
+# 3. Create a Scratch object, automatically analyze metadata such as asset lists
+scratch = Scratch(project) # Pass in project to get all data
 
-# 4. Generate output. Because generation produces multiple files, provide an output directory
-scratch.generate(Path("output"), language="python")  # `language` defaults to "python"; other targets are TODO
+# 4. Generate output (multiple files), so specify an output directory
+scratch.generate(Path("output"), language="python") # The first parameter is the output directory, language is optional (default "python"), other languages not yet supported (TODO)
 
-# 5. Results are written to the `output` directory. Objects are safe to let go out of scope.
+# 5. The output directory contains the generated results. Object destruction is safe and does not require manual management
 ```
+
+## Note
+
+I haven't refactored the package interface yet, so it's a bit difficult to use. Please wait for me to refactor the interface to make this package more user-friendly.

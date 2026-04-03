@@ -24,9 +24,23 @@ Scratch 解析库。一个使用Python制作的能够分析Python代码的软件
 
 我不打算完全放弃他，但是请等我深造几年，吃透OpenGL后，再管它吧。我想到时候将他作为独立库发布，同时更名`python-scratch-vm`。到时候可以两个库结合使用。
 
+### 目录结构
+
+```folder
+├── docs # 文档注释文件夹
+│   ├── README.chinese.md # 中文文档
+│   └── README.english.md # 英文文档
+├── LICENSE # MIT
+├── pyproject.toml # 项目配置
+├── README.md -> docs/README.chinese.md # 自述文件符号链接
+├── requirements.txt # 需求文件
+└── src # 源代码
+    └── ScratchAnalyzer # 软件包目录
+```
+
 ## 使用
 
-下载软件包后，目前我还没有定好引入名称，示例用`ScratchAnalyzer`。
+下载软件包后，包名为`ScratchAnalyzer`。
 
 ### 准备
 
@@ -56,3 +70,7 @@ scratch.generate(Path("output"), language="python") # 第一个参数为输出�
 
 # 5.output下即生产结果，对象析构安全，不需要手动管理
 ```
+
+## 注意
+
+目前我还没有修改软件包接口，因此用起来有些困难。请等待我重构接口，以让这个软件包更好使用。
