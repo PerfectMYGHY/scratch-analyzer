@@ -1,6 +1,6 @@
 # scratch-analyzer
 
-English version README.md: [README.english.md](docs/README.english.md)
+English version README.md: [README.english.md](README.english.md)
 
 Scratch 解析库。一个使用Python制作的能够分析Python代码的软件包。
 
@@ -40,7 +40,7 @@ Scratch 解析库。一个使用Python制作的能够分析Python代码的软件
 
 ## 使用
 
-首先下载软件包后，注意软件包名为`ScratchAnalyzer`。
+首先下载软件包。注意使用时软件包名为`ScratchAnalyzer`。
 
 ### 准备
 
