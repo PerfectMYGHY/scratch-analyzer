@@ -1,5 +1,5 @@
 import json
-from .public import root_path
+from .public import assets_root_path
 
 
 class WrappedTranslator(object):
@@ -15,6 +15,6 @@ class WrappedTranslator(object):
             return super().__getattribute__(item)
 
 def load_translator(language):
-    with open(root_path / f"translator.{language.lower()}.json", "r", encoding="utf-8") as file:
+    with open(assets_root_path / f"translator.{language.lower()}.json", "r", encoding="utf-8") as file:
         data = json.load(file)
     return WrappedTranslator(data)

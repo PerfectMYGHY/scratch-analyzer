@@ -38,4 +38,4 @@ substack_opcodes_need_flush = {
     "control_while": True
 }
 
-root_path = Path(__file__).parent
+assets_root_path = Path(__file__).parent / "assets"

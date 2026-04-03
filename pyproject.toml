@@ -21,4 +21,14 @@ dependencies = [
 Homepage = "https://github.com/PerfectMYGHY/scratch-analyzer"
 
 [project.scripts]
-your-cli = "ScratchAnalyzer.__main__:main"  # 命令行入口
+analyze-scratch = "ScratchAnalyzer.__main__:main"  # 命令行入口
+
+[tool.setuptools.package-data]
+ScratchAnalyzer = [
+    "assets/*.json",           # 包含所有 JSON 文件
+    "assets/*.tpl"             # 包含模板文件
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ScratchAnalyzer*"]
