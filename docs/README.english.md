@@ -40,7 +40,7 @@ I don't plan to abandon it completely, but please wait for me to study for a few
 
 ## Usage
 
-After downloading the package, the package name is `ScratchAnalyzer`.
+First, download the package. Note that when using it, the package name is ScratchAnalyzer.
 
 ### Preparation
 
