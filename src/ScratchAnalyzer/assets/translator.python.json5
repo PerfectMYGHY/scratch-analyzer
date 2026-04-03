@@ -1,6 +1,10 @@
 {
+    // Python 代码翻译器配置 (一对一翻译模式)
+    // 用途：生成依赖运行时的代码，用于执行
+    // 生成的语言风格：可运行的 Python 代码
     // 可用参数占位符：%[参数名]%，除特殊的模板值外
-    
+
+    // 运动
     "motion_gotoxy": "await Scratch.goto_by_pos(instance, %[X]%, %[Y]%)",
     "motion_glideto": "await Scratch.glide_to(instance, %[SECS]%, %[TO]%)",
     "motion_turnright": "await Scratch.turn_right(instance, %[DEGREES]%)",
@@ -19,6 +23,7 @@
     "motion_xposition": "instance.x",
     "motion_yposition": "instance.y",
     "motion_direction": "instance.direction",
+    // 外观
     "looks_say": "await Scratch.say(instance, %[MESSAGE]%)",
     "looks_sayforsecs": "await Scratch.say_for(instance, %[MESSAGE]%, %[SECS]%)",
     "looks_switchcostumeto": "await Scratch.switch_costume_to(instance, %[COSTUME]%)",
@@ -37,6 +42,7 @@
     "looks_size": "instance.size",
     "looks_costumenumbername": "Scratch.getCostume(instance, %[NUMBER_NAME]%)",
     "looks_backdropnumbername": "Scratch.getBackdrop(instance, %[NUMBER_NAME]%)",
+    // 声音
     "sound_play": "await Scratch.play(instance, %[SOUND_MENU]%)",
     "sound_playuntildone": "await Scratch.play_until_done(instance, %[SOUND_MENU]%)",
     "sound_stopallsounds": "await Scratch.stop_all_from(instance)",
@@ -46,8 +52,10 @@
     "sound_changevolumeby": "await Scratch.change_volume_by(instance, %[VOLUME]%)",
     "sound_setvolumeto": "await Scratch.set_volume_to(instance, %[VOLUME]%)",
     "sound_volume": "instance.sprite.volume",
+    // 事件
     "event_broadcast": "await Scratch.broadcast(instance, %[BROADCAST_INPUT]%)",
     "event_broadcastandwait": "await Scratch.broadcast_and_wait(instance, %[BROADCAST_INPUT]%)",
+    // 控制
     "control_wait": "await Scratch.wait(instance, %[DURATION]%)",
     "control_repeat": "for _ in range(Scratch.Cast.toNumber(%[TIMES]%)):",
     "control_forever": "while True:",
@@ -60,6 +68,7 @@
     "control_stop": "await Scratch.c_stop(instance, %[STOP_OPTION]%, task_id)",
     "control_create_clone_of": "await Scratch.clone(instance, %[CLONE_OPTION]%)",
     "control_delete_this_clone": "await Scratch.deleteThisClone(instance, task_id)",
+    // 侦测
     "sensing_touchingobject": "Scratch.is_touching(instance, %[TOUCHINGOBJECTMENU]%)",
     "sensing_touchingcolor": "Scratch.is_touching_color(instance, %[COLOR]%)",
     "sensing_coloristouchingcolor": "Scratch.is_color_touching_color(%[COLOR]%, %[COLOR2]%)",
@@ -78,6 +87,7 @@
     "sensing_current": "Scratch.get_part_of_current_time(%[CURRENTMENU]%)",
     "sensing_dayssince2000": "Scratch.get_days_since_2000()",
     "sensing_username": "Scratch.get_user_name()",
+    // 运算
     "operator_add": "(Scratch.Cast.toNumber(%[NUM1]%, error=False) + Scratch.Cast.toNumber(%[NUM2]%, error=False))",
     "operator_subtract": "(Scratch.Cast.toNumber(%[NUM1]%, error=False) - Scratch.Cast.toNumber(%[NUM2]%, error=False))",
     "operator_multiply": "(Scratch.Cast.toNumber(%[NUM1]%, error=False) * Scratch.Cast.toNumber(%[NUM2]%, error=False))",
@@ -93,16 +103,17 @@
     "operator_letter_of": "Scratch.letter_of(Scratch.Cast.toStr(%[STRING]%), Scratch.Cast.toNumber(%[LETTER]%, error=False))",
     "operator_length": "len(Scratch.Cast.toStr(%[STRING]%))",
     "operator_contains": "(Scratch.Cast.toStr(%[STRING2]%).lower() in Scratch.Cast.toStr(%[STRING1]%).lower())",
-    "operator_mod": "Scratch.mod(Scratch.Cast.toNumber(%[NUM1]%, error=False), Scratch.Cast.toNumber(%[NUM2]%, error=False))",
+    "operator_mod": "Scratch.mod(Scratch.Cast.toNumber(%[NUM1]%, error=False), Scratch.Cast.toNumber(%[NUM2]%, error=False))", // Scratch取模使用了特殊算法以应对负数，需要区分
     "operator_round": "round(Scratch.Cast.toNumber(%[NUM]%, error=False))",
     "operator_mathop": "Scratch.math_operation(%[OPERATOR]%, Scratch.Cast.toNumber(%[NUM]%, error=False))",
+    // 变量
     "data_variable": "Scratch.getVariable(instance, %[VARIABLE]%)",
     "data_variable_replacing": "Scratch.getVariable(instance, \"{value}\")", // 适用于全局替换的模板（此特性为了解决Scratch老版遗留问题）
     "data_setvariableto": "Scratch.setVariable(instance, %[VARIABLE]%, %[VALUE]%)",
     "data_changevariableby": "Scratch.changeVariableBy(instance, %[VARIABLE]%, %[VALUE]%)",
-    "data_showvariable": "# BLANK. OPCODE: data_showvariable",
-    "data_hidevariable": "# BLANK. OPCODE: data_hidevariable",
-    "data_listcontents": "Scratch.getList(instance, %[LIST]%)",
+    "data_showvariable": "Scratch.showVariable(instance, %[VARIABLE]%)",
+    "data_hidevariable": "Scratch.hideVariable(instance, %[VARIABLE]%)",
+    "data_listcontents": "Scratch.getList(instance, %[LIST]%)", // Scratch中列表的内容是一个字符串，元素之间用空格分隔（如果都是单个字符还会不分隔）
     "data_addtolist": "Scratch.addToList(instance, %[LIST]%, %[ITEM]%)",
     "data_deleteoflist": "Scratch.deleteIndexOfList(instance, %[LIST]%, %[INDEX]%)",
     "data_deletealloflist": "Scratch.clearList(instance, %[LIST]%)",
@@ -112,11 +123,13 @@
     "data_itemnumoflist": "Scratch.findIndexOfList(instance, %[LIST]%, %[ITEM]%)",
     "data_lengthoflist": "Scratch.getLengthOfList(instance, %[LIST]%)",
     "data_listcontainsitem": "Scratch.containItemOfList(instance, %[LIST]%, %[ITEM]%)",
-    "data_showlist": "# BLANK. OPCODE: data_showlist",
-    "data_hidelist": "# BLANK. OPCODE: data_hidelist",
+    "data_showlist": "Scratch.showList(instance, %[LIST]%)",
+    "data_hidelist": "Scratch.hideList(instance, %[LIST]%)",
+    // 自定义积木
     "procedures_call": "await Scratch.call(%[FUNC_NAME]%, instance, task_id, %[ARGS]%)",
     "argument_reporter_string_number": "Scratch.get_param(task_id, Scratch.Cast.toStr(%[VALUE]%))",
     "argument_reporter_boolean": "Scratch.get_param(task_id, Scratch.Cast.toStr(%[VALUE]%))",
+    // 画笔扩展
     "pen_clear": "Scratch.pen_clear()",
     "pen_penDown": "Scratch.pen_pen_down(instance)",
     "pen_penUp": "Scratch.pen_pen_up(instance)",
@@ -125,5 +138,5 @@
     "pen_setPenColorParamTo": "Scratch.pen_set_color_param(instance, %[COLOR_PARAM]%, %[VALUE]%)",
     "pen_changePenSizeBy": "Scratch.pen_change_width(instance, %[SIZE]%)",
     "pen_setPenSizeTo": "Scratch.pen_set_width(instance, %[SIZE]%)",
-    "pen_menu_colorParam": "%[colorParam]%"
+    "pen_menu_colorParam": "%[colorParam]%" // 扩展特殊配置
 }
