@@ -5,6 +5,7 @@ from .translator import load_translator
 from .Cast import toCode
 import json
 import re
+from pathlib import Path
 
 
 def replaceName(name: str):
@@ -414,6 +415,7 @@ class Scratch(object):
         return result, (imports_code, inits)
 
     def generate(self, output, language="python", print_progress=True):
+        output = Path(output)
         result, (imports_code, inits) = self.analyze(language, print_progress)
         progress_generator = ColoredTqdm if print_progress else lambda x, **kwargs: x
         # 生成并复制每个角色文件

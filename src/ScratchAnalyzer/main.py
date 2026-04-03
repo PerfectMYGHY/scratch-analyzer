@@ -17,7 +17,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", "-i", type=str, required=True, help="输入文件（必须是Scratch3.0文件）")
     parser.add_argument("--output", "-o", type=str, required=True, help="输出目录")
-    parser.add_argument("--language", "-l", default="python-pcode", choices=supported_languages, type=str, required=False, help="转换成的语言")
+    parser.add_argument("--language", "-l", default="python", choices=supported_languages, type=str, required=False, help="转换成的语言")
     parser.add_argument("--disable-print-progress", "-dp", action='store_true', help="是否禁用输出进度条")
     args = parser.parse_args()
 

@@ -94,8 +94,8 @@ class Scratch(object):
     def __init__(self, project: Project):
         ...
 
-    def analyze(self, language: Language="python", print_progress: bool=True):
+    def analyze(self, language: Language="python", print_progress: bool=True) -> tuple[dict[str, tuple[str, str]], tuple[str, str]]:
         ...
 
-    def generate(self, output: Path, language: Language="python", print_progress: bool=True):
+    def generate(self, output: Path | str, language: Language="python", print_progress: bool=True) -> None:
         ...
