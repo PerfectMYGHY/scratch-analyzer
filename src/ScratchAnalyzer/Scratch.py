@@ -256,14 +256,14 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
             code = None
             for vid, variable in self.target.variables.items():
                 if variable[0] == value:
-                    code = f'Scratch.getVariable(instance, "{value}")'
+                    code = self.translator.data_variable_replacing.format(value=value)
                     hasVariable = True
                     break
             if not hasVariable:
                 if stage:
                     for vid, variable in stage.variables.items():
                         if variable[0] == value:
-                            code = f'Scratch.getVariable(instance, "{value}")'
+                            code = self.translator.data_variable_replacing.format(value=value)
                             hasVariable = True
                             break
                 if not hasVariable:
@@ -293,31 +293,21 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
                             break
                     if not found:
                         raise ValueError("未找到proccode对应的自定义函数！")
-                case "ARGS_TO_GLOBAL":
-                    pattern = r'Scratch\.getVariable\(instance,\s*"([^"]*)"\)'
-                    replacement = r'Scratch.getVariable(instance, \\"\1\\")'
-                    value2 = re.sub(pattern, replacement, value)
-                    value2 = re.sub(r'""(.+?)""', r'"\\"\1\\""', value2)
-                    try:
-                        _args = json.loads(value2)
-                    except json.JSONDecodeError:
-                        pattern = r'\((?!\\")(")([^"\\]*(?:\\.[^"\\]*)*)(")(?<!\\)\)'
-                        # value2 = value2.replace('("', '(\\"').replace('")', '\\")')
-                        value2 = re.sub(pattern, r'(\\"\2\\")', value2)
-                        value2 = value2.replace('("', '(\\"').replace('", error=False)', '\\", error=False)')
-                        try:
-                            _args = json.loads(value2)
-                        except json.JSONDecodeError:
-                            raise ValueError(f"错误的值数据：{value}\n修复后：{value2}")
-                    if not last_func_name:
-                        raise ValueError("意外出现的参数全局替换请求，通常是先请求替换函数名！")
+                case "FUNC_METADATA":
                     option = self.procedures_prototypes[last_func_name]
                     args = {}
-                    for arg_id, code in _args.items():
-                        arg_idx = option["arg_ids"].index(arg_id)
+                    for arg_idx, arg_id in enumerate(option["arg_ids"]):
                         arg_name = option["arg_names"][arg_idx]
-                        args[arg_name] = code
-                    data = data.replace(f'!!![{key}][{value}]!!!', self.getArgMap(args))  # 替换为参数列表
+                        args[arg_id] = arg_name
+                    data = data.replace(f'!!![{key}][{value}]!!!', json.dumps(args, ensure_ascii=False))
+                case "ARGS_TO_GLOBAL":
+                    option = self.procedures_prototypes[last_func_name]
+                    args = {}
+                    value2 = value
+                    for arg_idx, arg_id in enumerate(option["arg_ids"]):
+                        arg_name = option["arg_names"][arg_idx]
+                        value2 = value2.replace(arg_id, arg_name)
+                    data = data.replace(f'!!![{key}][{value}]!!!', value2)  # 替换为参数列表
                 case _:
                     raise ValueError(f"意外的全局替换请求！key=`{key}`,value=`{value}`")
 

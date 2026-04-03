@@ -1,4 +1,6 @@
 {
+    // 可用参数占位符：%[参数名]%，除特殊的模板值外
+    
     "motion_gotoxy": "await Scratch.goto_by_pos(instance, %[X]%, %[Y]%)",
     "motion_glideto": "await Scratch.glide_to(instance, %[SECS]%, %[TO]%)",
     "motion_turnright": "await Scratch.turn_right(instance, %[DEGREES]%)",
@@ -95,6 +97,7 @@
     "operator_round": "round(Scratch.Cast.toNumber(%[NUM]%, error=False))",
     "operator_mathop": "Scratch.math_operation(%[OPERATOR]%, Scratch.Cast.toNumber(%[NUM]%, error=False))",
     "data_variable": "Scratch.getVariable(instance, %[VARIABLE]%)",
+    "data_variable_replacing": "Scratch.getVariable(instance, \"{value}\")", // 适用于全局替换的模板（此特性为了解决Scratch老版遗留问题）
     "data_setvariableto": "Scratch.setVariable(instance, %[VARIABLE]%, %[VALUE]%)",
     "data_changevariableby": "Scratch.changeVariableBy(instance, %[VARIABLE]%, %[VALUE]%)",
     "data_showvariable": "# BLANK. OPCODE: data_showvariable",

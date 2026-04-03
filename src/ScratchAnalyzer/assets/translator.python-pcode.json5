@@ -1,4 +1,9 @@
 {
+    // 伪代码翻译器配置 (pcode 模式)
+    // 用途：生成不依赖运行时的伪代码，用于代码分析、相似度检测
+    // 生成的语言风格：类似 Python 的伪代码
+    // 可用参数占位符：%[参数名]%，除特殊的模板值外
+
     // 运动
     "motion_gotoxy": "goto_xy(%[X]%, %[Y]%)",
     "motion_glideto": "glide_to(%[SECS]%, %[TO]%)",
@@ -81,13 +86,13 @@
     "sensing_of": "property_of_sprite(%[OBJECT]%, %[PROPERTY]%)",
     "sensing_current": "get_part_of_current_time(%[CURRENTMENU]%)",
     "sensing_dayssince2000": "get_days_since_2000()",
-    "sensing_username": "Scratch.get_user_name()",
+    "sensing_username": "get_user_name()",
     // 运算
     "operator_add": "(%[NUM1]% + %[NUM2]%)",
     "operator_subtract": "(%[NUM1]% - %[NUM2]%)",
     "operator_multiply": "(%[NUM1]% * %[NUM2]%)",
-    "operator_divide": "(%[NUM1]%, %[NUM2]%)",
-    "operator_random": "Scratch.randnum(%[FROM]%, %[TO]%)",
+    "operator_divide": "(%[NUM1]% / %[NUM2]%)",
+    "operator_random": "randnum(%[FROM]%, %[TO]%)",
     "operator_lt": "(%[OPERAND1]% < %[OPERAND2]%)",
     "operator_gt": "(%[OPERAND1]% > %[OPERAND2]%)",
     "operator_equals": "(%[OPERAND1]% == %[OPERAND2]%)",
@@ -103,11 +108,12 @@
     "operator_mathop": "math_operation(%[OPERATOR]%, %[NUM]%)",
     // 变量
     "data_variable": "get_variable(%[VARIABLE]%)",
+    "data_variable_replacing": "get_variable(\"{value}\")", // 适用于全局替换的模板（此特性为了解决Scratch老版遗留问题）
     "data_setvariableto": "set_variable(%[VARIABLE]%, %[VALUE]%)",
     "data_changevariableby": "change_variable_by(%[VARIABLE]%, %[VALUE]%)",
-    "data_showvariable": "show_variable(%[VARIABLE]%)", // TODO: 验证参数名
-    "data_hidevariable": "hide_variable(%[VARIABLE]%)", // TODO: 验证参数名
-    "data_listcontents": "get_ist(%[LIST]%)", // Scratch中列表的内容是一个字符串，元素之间用空格分隔（如果都是单个字符还会不分隔）
+    "data_showvariable": "show_variable(%[VARIABLE]%)",
+    "data_hidevariable": "hide_variable(%[VARIABLE]%)",
+    "data_listcontents": "get_list(%[LIST]%)", // Scratch中列表的内容是一个字符串，元素之间用空格分隔（如果都是单个字符还会不分隔）
     "data_addtolist": "add_to_list(%[LIST]%, %[ITEM]%)",
     "data_deleteoflist": "delete_index_of_list(%[LIST]%, %[INDEX]%)",
     "data_deletealloflist": "clear_list(%[LIST]%)",
@@ -117,8 +123,8 @@
     "data_itemnumoflist": "find_index_of_list(%[LIST]%, %[ITEM]%)",
     "data_lengthoflist": "get_length_of_list(%[LIST]%)",
     "data_listcontainsitem": "contain_item_of_list(%[LIST]%, %[ITEM]%)",
-    "data_showlist": "show_list(%[LIST]%)", // TODO: 验证参数名
-    "data_hidelist": "hide_list(%[LIST]%)", // TODO: 验证参数名
+    "data_showlist": "show_list(%[LIST]%)",
+    "data_hidelist": "hide_list(%[LIST]%)",
     // 自定义积木
     "procedures_call": "call(%[FUNC_NAME]%, %[ARGS]%)",
     "argument_reporter_string_number": "custom_get_param(str(%[VALUE]%))",

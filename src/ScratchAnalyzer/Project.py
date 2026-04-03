@@ -85,7 +85,10 @@ class Block(object):
                 continue
             value = args[arg_id].toCode(translator, func_name, procedures_prototypes)
             result[arg_id] = value
-        return json.dumps(result, ensure_ascii=False)
+        ret = "{"
+        ret += ", ".join([f'"{key}": {value}' for key, value in result.items()])
+        ret += "}"
+        return ret
 
     def toCode(self, translator, indent, func_name, procedures_prototypes):
         if self.opcode not in substack_opcodes: # shadow指的是是否有SUBSTACK（子积木，就比如“如果”里包着的积木）
