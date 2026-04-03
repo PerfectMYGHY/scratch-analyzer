@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Literal, Dict, List, TypedDict, Any, Union, Callable, Optional
-from Project import Project, Target, Block
-from translator import WrappedTranslator
+from .Project import Project, Target, Block
+from .translator import WrappedTranslator
 
 Number = Union[int, float]
 

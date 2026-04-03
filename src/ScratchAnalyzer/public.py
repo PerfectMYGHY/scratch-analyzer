@@ -1,3 +1,6 @@
+from pathlib import Path
+
+
 supported_languages = [
     "python"
 ]
@@ -34,3 +37,5 @@ substack_opcodes_need_flush = {
     "control_repeat_until": True,
     "control_while": True
 }
+
+root_path = Path(__file__).parent

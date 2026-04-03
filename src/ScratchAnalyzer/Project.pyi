@@ -1,6 +1,6 @@
 from typing import TypedDict, List, Optional, Dict, Any, Union
 
-from translator import WrappedTranslator
+from .translator import WrappedTranslator
 
 
 class MetaDict(TypedDict):

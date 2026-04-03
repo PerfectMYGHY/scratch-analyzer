@@ -1,16 +1,10 @@
-from errors import UnsupportedError
-from iostream import ColoredTqdm, ForeLightYellow
-from public import supported_languages, head_block_opcodes, entries_block_opcodes
-from translator import load_translator
+from .errors import UnsupportedError
+from .iostream import ColoredTqdm, ForeLightYellow
+from .public import supported_languages, head_block_opcodes, entries_block_opcodes, root_path
+from .translator import load_translator
+from .Cast import toCode
 import json
-from typing import Dict, List
 import re
-from Cast import toCode
-import shutil
-from pathlib import Path
-
-
-root_path = Path(__file__).parent
 
 
 def replaceName(name: str):
@@ -232,7 +226,7 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
             data += self.toCodeFrom(func) + "\n"
 
         # 添加主程序
-        with open(root_path / "codeMain.tpl", "r", encoding="utf-8") as file:
+        with open(root_path / f"codeMain.{self.language}.tpl", "r", encoding="utf-8") as file:
             codeMain = file.read().replace("""import Scratch4Python as Scratch
 """, "")
         data += codeMain.format(name=self.name, variables=self.getVariablesDict(), x=self.target.x, y=self.target.y,
@@ -418,5 +412,5 @@ class Scratch(object):
             inits += "{name}_init, ".format(name=name)
         inits += "]"
         # 生成并复制主程序
-        with open(root_path / "progMain.tpl", "r", encoding="utf-8") as ifile, open(output / "main.py", "w", encoding="utf-8") as ofile:
+        with open(root_path / f"progMain.{language}.tpl", "r", encoding="utf-8") as ifile, open(output / "main.py", "w", encoding="utf-8") as ofile:
             ofile.write(ifile.read().format(imports=imports_code, inits=inits))

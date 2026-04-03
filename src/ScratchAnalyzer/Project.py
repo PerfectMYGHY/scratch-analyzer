@@ -1,9 +1,9 @@
 import re
 
-from errors import UnsupportedError
-from iostream import ColoredTqdm
-from Cast import toCode
-from public import substack_opcodes, substack_opcodes_need_flush
+from .errors import UnsupportedError
+from .iostream import ColoredTqdm
+from .Cast import toCode
+from .public import substack_opcodes, substack_opcodes_need_flush
 import json
 import warnings
 

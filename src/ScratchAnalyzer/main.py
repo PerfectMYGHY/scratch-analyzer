@@ -2,15 +2,14 @@ import zipfile
 import os
 import sys
 import argparse
-import tqdm
 import json
 import shutil
 import traceback
 from pathlib import Path
 
-from iostream import ForeLightRed, ForeLightGreen, StartLightRed, Reset, ColoredTqdm
-from Project import Project
-from Scratch import Scratch
+from .iostream import ForeLightRed, ForeLightGreen, StartLightRed, Reset, ColoredTqdm
+from .Project import Project
+from .Scratch import Scratch
 
 
 def main() -> int:
