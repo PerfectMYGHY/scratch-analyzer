@@ -20,7 +20,7 @@ class AssetsDict(TypedDict):
     sounds: Dict[str, str] # key: name, value: basename
     costumes: Dict[str, CostumeDict] # key: name, value: {path: basename, ...}
 
-Language = Literal["python", "java"]
+Language = Literal["python", "python-pcode"]
 
 class Scratch2OtherFile(object):
     language: Language
@@ -81,7 +81,10 @@ class Scratch2OtherFile(object):
     def getArgMap(self, args: dict[str, str]) -> str:
         ...
 
-    def generate(self, output: Path, stage: Optional[Target] = None) -> None:
+    def analyze(self, stage: Optional[Target] = None, print_progress: bool=True) -> tuple[str, str]:
+        ...
+
+    def generate(self, output: Path, stage: Optional[Target] = None, print_progress: bool=True) -> None:
         ...
 
 class Scratch(object):
@@ -91,5 +94,8 @@ class Scratch(object):
     def __init__(self, project: Project):
         ...
 
-    def generate(self, output: Path, language: Language="python"):
+    def analyze(self, language: Language="python", print_progress: bool=True):
+        ...
+
+    def generate(self, output: Path, language: Language="python", print_progress: bool=True):
         ...

@@ -18,6 +18,7 @@ def main() -> int:
     parser.add_argument("--input", "-i", type=str, required=True, help="输入文件（必须是Scratch3.0文件）")
     parser.add_argument("--output", "-o", type=str, required=True, help="输出目录")
     parser.add_argument("--language", "-l", default="python-pcode", choices=supported_languages, type=str, required=False, help="转换成的语言")
+    parser.add_argument("--disable-print-progress", "-dp", action='store_true', help="是否禁用输出进度条")
     args = parser.parse_args()
 
     if os.path.isfile(args.output):
@@ -34,8 +35,11 @@ def main() -> int:
             return -1
         print(ForeLightRed("输入文件不是 Scratch 项目文件！"))
         return -1
+        
+    progress_generator = ColoredTqdm if not args.disable_print_progress else lambda x, **kwargs: x
 
-    print(ForeLightGreen("正在初始化输出目录..."))
+    if not args.disable_print_progress:
+        print(ForeLightGreen("正在初始化输出目录..."))
     if os.path.exists(args.output) and os.path.isdir(args.output):
         shutil.rmtree(args.output)
     os.makedirs(args.output)
@@ -44,7 +48,7 @@ def main() -> int:
     out = os.path.join(args.output, "assets") # 全部解压至输出目录
     with zipfile.ZipFile(args.input, "r") as zip_ref:
         try:
-            for member in ColoredTqdm(zip_ref.infolist(), desc="正在解压中", unit="文件"):
+            for member in progress_generator(zip_ref.infolist(), desc="正在解压中", unit="文件"):
                 zip_ref.extract(member, out)
         except:
             StartLightRed()
@@ -54,17 +58,18 @@ def main() -> int:
             return -1
 
     # 步骤2：解析project.json
-    print(f"正在解析项目数据...")
+    if not args.disable_print_progress:
+        print(f"正在解析项目数据...")
     project_json = os.path.join(out, "project.json")
     with open(project_json, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     # 步骤3：解析数据
-    project = Project(data)
+    project = Project(data, print_progress=not args.disable_print_progress)
 
     # 步骤4：生成数据
     scratch = Scratch(project)
-    scratch.generate(Path(args.output), language=args.language)
+    scratch.generate(Path(args.output), language=args.language, print_progress=not args.disable_print_progress)
 
     return 0
 

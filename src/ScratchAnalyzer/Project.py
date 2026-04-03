@@ -174,7 +174,8 @@ class Block(object):
         return code, indent
 
 class Target(object):
-    def __init__(self, target):
+    def __init__(self, target, print_progress: bool=True):
+        progress_generator = ColoredTqdm if print_progress else lambda x, **kwargs: x
         # 获取数据
         self.isStage = target["isStage"]
         self.name = target["name"]
@@ -221,9 +222,9 @@ class Target(object):
         }}
         if self._blocks:
             # 计算blocks
-            self.blocks = {k: Block(v, self) for k, v in ColoredTqdm(self._blocks.items(), desc="创建积木块中", unit="积木块") if isinstance(v, dict)}
+            self.blocks = {k: Block(v, self) for k, v in progress_generator(self._blocks.items(), desc="创建积木块中", unit="积木块") if isinstance(v, dict)}
             # 计算关联
-            for block in ColoredTqdm(self.blocks.values(), desc="计算块关联中", unit="积木块"):
+            for block in progress_generator(self.blocks.values(), desc="计算块关联中", unit="积木块"):
                 block.compute_relation()
         else:
             self.blocks = {}
@@ -257,24 +258,25 @@ class Meta(object):
         self.vm = meta["vm"]
 
 class Project(object):
-    def __init__(self, project):
+    def __init__(self, project, print_progress=True):
         self.project = project
-        self._parse()
+        self._parse(print_progress=print_progress)
 
-    def _parse(self):
+    def _parse(self, print_progress=True):
+        progress_generator = ColoredTqdm if print_progress else lambda x, **kwargs: x
         if self.project.get("extensionURLs"):
             warnings.warn("项目中包含自定义URL扩展，可能来自TurboWarp，当前版本不支持解析这些扩展，相关积木将无法转换！")
         self.meta = Meta(self.project["meta"])
         self.extensions = {}
         if self.project["extensions"]:
-            for name in ColoredTqdm(self.project["extensions"], desc="处理扩展中", unit="个"):
+            for name in progress_generator(self.project["extensions"], desc="处理扩展中", unit="个"):
                 self.extensions[name] = Extension(name)
         self.monitors = {}
         if self.project["monitors"]:
-            for monitor in ColoredTqdm(self.project["monitors"], desc="处理变量监视器中", unit="个"):
+            for monitor in progress_generator(self.project["monitors"], desc="处理变量监视器中", unit="个"):
                 self.monitors[monitor["id"]] = Monitor(monitor)
         self.targets = {}
         if self.project["targets"]:
-            for target in ColoredTqdm(self.project["targets"], desc="处理角色中", unit="个"):
-                self.targets[target["name"]] = Target(target)
+            for target in progress_generator(self.project["targets"], desc="处理角色中", unit="个"):
+                self.targets[target["name"]] = Target(target, print_progress=print_progress)
 

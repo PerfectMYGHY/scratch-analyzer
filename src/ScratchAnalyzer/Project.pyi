@@ -187,7 +187,7 @@ class Target(object):
     tempo: Optional[int]
     args: Dict[str, Any]
 
-    def __init__(self, target: TargetDict):
+    def __init__(self, target: TargetDict, print_progress: bool=True):
         ...
 
 class Monitor(object):
@@ -228,8 +228,8 @@ class Project(object):
     extensions: Dict[str, Extension]
     meta: Meta
 
-    def __init__(self, project: ProjectDict):
+    def __init__(self, project: ProjectDict, print_progress: bool=True):
         ...
 
-    def _parse(self) -> None:
+    def _parse(self, print_progress: bool=True) -> None:
         ...

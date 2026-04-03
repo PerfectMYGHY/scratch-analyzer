@@ -198,7 +198,7 @@ class Scratch2OtherFile(object):
         code += "}"
         return code
 
-    def generate(self, output, stage = None):
+    def analyze(self, stage = None, print_progress=True):
         data = f'''"""
 Scratch2Python库生成
 注意：由于是机器翻译代码，本文件会有多处地方出现冗余的括号、多余的代码等。请不要以此文件来学习Python。
@@ -209,9 +209,10 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
 # 变量
 
 '''
+        progress_generator = ColoredTqdm if print_progress else lambda x, **kwargs: x
 
         # 生成变量
-        for variable in ColoredTqdm(self.variables, desc="正在生成变量代码"):
+        for variable in progress_generator(self.variables, desc="正在生成变量代码"):
             if variable["type"] == "v":
                 if isinstance(variable["default"], int):
                     data += f"{variable['name']} = {variable['default']} # Scratch变量——原名:{variable['real_name']}\n"
@@ -222,7 +223,7 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
 
         data += "\n# 函数\n\n"
         # 生成函数代码
-        for func in ColoredTqdm(self.funcs, desc="正在生成函数"):
+        for func in progress_generator(self.funcs, desc="正在生成函数"):
             data += self.toCodeFrom(func) + "\n"
 
         # 添加主程序
@@ -245,7 +246,7 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
         pattern = r'!!!\[([^\[\]]+?)\]\[(.*?)\]!!!'
 
         # 先处理变量请求
-        for match in ColoredTqdm(re.finditer(pattern_for_code, data, re.DOTALL), desc="正在查找全局替换变量请求"):
+        for match in progress_generator(re.finditer(pattern_for_code, data, re.DOTALL), desc="正在查找全局替换变量请求"):
             name = match.group(1).strip()
             value = match.group(2)
             if name == "SPECIAL_CODE_TO_GLOBAL":
@@ -273,7 +274,7 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
             data = data.replace(f'!!![{key}][{value}]!!!', code)  # 替换
 
         # 其次检查其他请求
-        for match in ColoredTqdm(re.finditer(pattern, data, re.DOTALL), desc="正在查找全局替换普通请求"):
+        for match in progress_generator(re.finditer(pattern, data, re.DOTALL), desc="正在查找全局替换普通请求"):
             name = match.group(1).strip()
             value = match.group(2).strip()
             if name == "SPECIAL_CODE_TO_GLOBAL":
@@ -281,7 +282,7 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
             global_tasks.append((name, value))
 
         last_func_name = None
-        for key, value in ColoredTqdm(global_tasks, "正在进行全局替换"):
+        for key, value in progress_generator(global_tasks, desc="正在进行全局替换"):
             match key:
                 case "FUNC_NAME_TO_GLOBAL":
                     found = False
@@ -311,9 +312,11 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
                 case _:
                     raise ValueError(f"意外的全局替换请求！key=`{key}`,value=`{value}`")
 
-        # 写入文件
-        path = output / f"target_{self.name}.py"
-        with open(path, "w", encoding="utf-8") as file:
+        return f"target_{self.name}.py", data
+
+    def generate(self, output, stage = None, print_progress=True):
+        name, data = self.analyze(stage, print_progress=print_progress)
+        with open(output / name, "w", encoding="utf-8") as file:
             file.write(data)
 
 class Scratch(object):
@@ -321,18 +324,22 @@ class Scratch(object):
         self.project = project
         self.public_id_to_variable_name = {}
 
-    def generate(self, output, language="python"):
+    def analyze(self, language="python", print_progress=True):
+        result = {}
+
         language = language.lower()
         if language not in supported_languages:
             raise UnsupportedError(f"暂不支持转换为{language}语言")
-        print(ForeLightYellow("开始将Scratch项目转换为", language, "语言！"))
+        if print_progress:
+            print(ForeLightYellow("开始将Scratch项目转换为", language, "语言！"))
+        progress_generator = ColoredTqdm if print_progress else lambda x, **kwargs: x
         # 首先处理舞台
         stage = self.project.targets["Stage"]
         if not stage.isStage:
             raise ValueError("Stage角色不是舞台！舞台角色检测失败！")
         stage_file = Scratch2OtherFile(language, stage.name, stage, True)
         # 收集公共变量
-        for vid, variable in ColoredTqdm(stage.variables.items(), desc="正在收集公共变量"):
+        for vid, variable in progress_generator(stage.variables.items(), desc="正在收集公共变量"):
             name = replaceName(f"public_variable_{variable[0]}")
             stage_file.variables.append({
                 "name": name,
@@ -342,7 +349,7 @@ class Scratch(object):
             })
             self.public_id_to_variable_name[vid] = name
         # 收集公共列表
-        for vid, li in ColoredTqdm(stage.lists.items(), desc="正在收集公共列表"):
+        for vid, li in progress_generator(stage.lists.items(), desc="正在收集公共列表"):
             name = replaceName(f"public_list_{li[0]}")
             stage_file.variables.append({
                 "name": name,
@@ -352,22 +359,23 @@ class Scratch(object):
             })
             self.public_id_to_variable_name[vid] = name
         # 收集函数入口点
-        for bid, block in ColoredTqdm(stage.blocks.items(), desc="正在收集函数入口点"):
+        for bid, block in progress_generator(stage.blocks.items(), desc="正在收集函数入口点"):
             if block.opcode in head_block_opcodes:
                 stage_file.funcs.append(block)
             if block.opcode in entries_block_opcodes:
                 stage_file.entries.append(block)
         # 开始生成舞台文件
-        stage_file.generate(output)
+        stage_name, stage_data = stage_file.analyze(print_progress=print_progress)
+        result["Stage"] = stage_name, stage_data
 
         # 生成剩余标准角色
-        for name, target in ColoredTqdm(self.project.targets.items(), desc="正在处理角色"):
+        for name, target in progress_generator(self.project.targets.items(), desc="正在处理角色"):
             if name == "Stage":
                 continue
 
             target_file = Scratch2OtherFile(language, replaceName(target.name), target, False)
             # 收集公共变量
-            for vid, variable in ColoredTqdm(target.variables.items(), desc="正在收集变量"):
+            for vid, variable in progress_generator(target.variables.items(), desc="正在收集变量"):
                 name = replaceName(f"{target.name}_variable_{variable[0]}")
                 target_file.variables.append({
                     "name": name,
@@ -376,7 +384,7 @@ class Scratch(object):
                     "type": "v"
                 })
             # 收集公共列表
-            for vid, li in ColoredTqdm(target.lists.items(), desc="正在收集列表"):
+            for vid, li in progress_generator(target.lists.items(), desc="正在收集列表"):
                 name = replaceName(f"{target.name}_list_{li[0]}")
                 target_file.variables.append({
                     "name": name,
@@ -385,13 +393,14 @@ class Scratch(object):
                     "type": "l"
                 })
             # 收集函数入口点
-            for bid, block in ColoredTqdm(target.blocks.items(), desc="正在收集函数入口点"):
+            for bid, block in progress_generator(target.blocks.items(), desc="正在收集函数入口点"):
                 if block.opcode in head_block_opcodes:
                     target_file.funcs.append(block)
                 if block.opcode in entries_block_opcodes:
                     target_file.entries.append(block)
             # 开始生成舞台文件
-            target_file.generate(output, stage=stage)
+            file_name, file_data = target_file.analyze(stage=stage, print_progress=print_progress)
+            result[name] = file_name, file_data
         # 生成数据
         imports_code = ""
         inits = "["
@@ -401,6 +410,16 @@ class Scratch(object):
             imports_code += "from {name} import init as {name}_init\n".format(name=name)
             inits += "{name}_init, ".format(name=name)
         inits += "]"
+
+        return result, (imports_code, inits)
+
+    def generate(self, output, language="python", print_progress=True):
+        result, (imports_code, inits) = self.analyze(language, print_progress)
+        progress_generator = ColoredTqdm if print_progress else lambda x, **kwargs: x
+        # 生成并复制每个角色文件
+        for name, (file_name, file_data) in progress_generator(result.items(), desc="正在写入角色文件"):
+            with open(output / file_name, "w", encoding="utf-8") as file:
+                file.write(file_data)
         # 生成并复制主程序
         with open(assets_root_path / f"progMain.{language}.tpl", "r", encoding="utf-8") as ifile, open(output / "main.py", "w", encoding="utf-8") as ofile:
             ofile.write(ifile.read().format(imports=imports_code, inits=inits))
