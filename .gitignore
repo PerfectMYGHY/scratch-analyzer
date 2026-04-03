@@ -1,5 +1,9 @@
 # 虚拟环境
 .venv/
+venv/
+
+# 环境配置文件
+.env
 
 # PyCharm
 .idea/
@@ -10,6 +14,9 @@
 
 # Python
 __pycache__/
+*.pyc
+*.pyo
+*.egg-info/
 
 # 生成的代码
 output/
@@ -17,3 +24,12 @@ out/
 
 # 测试用的Scratch文件
 *.sb3
+
+# 生成目录
+dist/
+build/
+
+# 缓存目录
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
