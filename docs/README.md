@@ -2,6 +2,9 @@
 
 English version README.md: [README.english.md](README.english.md)
 
+![Version](https://img.shields.io/badge/version-0.1.3-blue)
+![Status](https://img.shields.io/badge/status-alpha-orange)
+
 Scratch 解析库。一个使用Python制作的能够分析Python代码的软件包。
 
 ## 介绍
@@ -22,35 +25,83 @@ Scratch 解析库。一个使用Python制作的能够分析Python代码的软件
 
 ### 那Scratch4Python呢
 
-我不打算完全放弃他，但是请等我深造几年，吃透OpenGL后，再管它吧。我想到时候将他作为独立库发布，同时更名`python-scratch-vm`。到时候可以两个库结合使用。
+我不打算完全放弃他，但是请等我仔细学习相关知识再说。我想到时候将他作为独立库发布，同时更名`ScratchRuntime`。到时候可以两个库结合使用。
 
 ### 目录结构
 
 ```folder
 ├── docs # 文档注释文件夹
-│   ├── README.chinese.md # 中文文档
+│   ├── README.md # 中文文档
 │   └── README.english.md # 英文文档
 ├── LICENSE # MIT
 ├── pyproject.toml # 项目配置
-├── README.md -> docs/README.chinese.md # 自述文件符号链接
 ├── requirements.txt # 需求文件
 └── src # 源代码
     └── ScratchAnalyzer # 软件包目录
 ```
 
+## 环境要求
+
+- Python >= 3.10（因为使用了联合类型语法）
+
 ## 使用
 
 首先下载软件包。注意使用时软件包名为`ScratchAnalyzer`。
 
-### 准备
+### 安装
+
+你可以选择从Github的Releases里现在最新的版本，使用whl文件，然后：
+
+```bash
+pip install scratchanalyzer-x.x.x-xxx-xxxxx-xxx.whl
+```
+
+即可。
+
+### 命令行使用
+
+本库提供一个命令行CLI来直接帮你转换分析。在安装好本软件包后，可以使用`analyze-scratch`命令。
+
+如果要查看帮助，可以：
+
+```bash
+analyze-scratch -h
+```
+
+以下是命令的参数列表：
+
+| 参数名 | 调用名 | 类型 | 说明 |
+| - | - | - | - |
+| input | `--input`或`-i` | 文件路径字符串 | 要解析的Scratch文件，可以是原`.sb3`文件 |
+| output | `--output`或`-o` | 目录路径字符串 | 要分析转换生成到的目录名，可以不存在 |
+| language | `--language`或`-l` | 字符串 | 目标语言 |
+| disable-print-progress | `--disable-print-progress`或`-dp` | 不需要值 | 是否禁用打印进度信息 |
+
+示例命令：
+
+```bash
+analyze-scratch -i test2.sb3 -o out -l python-pcode # 将test2.sb3分析转换为python伪代码，并输出到out目录中
+```
+
+如果不需要打印进度信息：
+
+```bash
+analyze-scratch -i test2.sb3 -o out -l python-pcode -dp # 将test2.sb3分析转换为python伪代码，并输出到out目录中，不打印进度信息
+```
+
+- 注意：在输出的`out`目录里，还会有`assets`文件夹，其中是将Scratch项目（如`test2.sb3`）解压后的内容，包含素材和`project.json`
+
+### 在代码中使用
+
+#### 准备
 
 首先，请准备好Scratch项目的`project.json`，将Scratch文件的后缀名更改为`.zip`，然后解压，即可得到素材文件和`project.json`。分析文件只需要`project.json`，但是如果需要运行等，请加上素材文件。
 
-### 分析
+#### 分析
 
 假设已经准备好环境，使用方法如下：
 
-### 将分析结果直接生成进目录
+##### 将分析结果直接生成进目录
 
 ```python
 from ScratchAnalyzer import Project, Scratch
@@ -72,7 +123,7 @@ scratch.generate("output", language="python", print_progress=True) # 第一个�
 # 5.output下即生产结果，对象析构安全，不需要手动管理
 ```
 
-### 分析代码并获得生成结果
+##### 分析代码并获得生成结果
 
 ```python
 from ScratchAnalyzer import Project, Scratch

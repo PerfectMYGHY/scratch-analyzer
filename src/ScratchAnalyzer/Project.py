@@ -186,6 +186,7 @@ class Block(object):
                 else:
                     code += ("    " * indent) + f"{translator.blank_substack}\n"
             indent -= 1
+        code = re.sub(r'\n\s*\n', '\n', code)
         return code, indent
 
 class Target(object):

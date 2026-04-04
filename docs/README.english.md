@@ -1,6 +1,9 @@
 # scratch-analyzer
 
-中文版 README.md: [README.chinese.md](README.chinese.md)
+中文版 README.md: [README.md](README.md)
+
+![Version](https://img.shields.io/badge/version-0.1.3-blue)
+![Status](https://img.shields.io/badge/status-alpha-orange)
 
 A Scratch parsing library. A Python package capable of analyzing Scratch code.
 
@@ -22,35 +25,81 @@ I think this feature is quite valuable, so I created this repository and extract
 
 ### What about Scratch4Python?
 
-I don't plan to abandon it completely, but please wait for me to study for a few more years and fully understand OpenGL before I revisit it. I plan to release it as an independent library at that time, renamed to `python-scratch-vm`. At that point, the two libraries can be used together.
+I don't plan to abandon it completely, but please wait for me to study the relevant knowledge carefully first. I plan to release it as an independent library at that time, renamed to `ScratchRuntime`. At that point, the two libraries can be used together.
 
 ### Directory Structure
 
 ```folder
 ├── docs # Documentation folder
-│   ├── README.chinese.md # Chinese documentation
+│   ├── README.md # Chinese documentation
 │   └── README.english.md # English documentation
 ├── LICENSE # MIT
 ├── pyproject.toml # Project configuration
-├── README.md -> docs/README.chinese.md # README symlink
 ├── requirements.txt # Requirements file
 └── src # Source code
     └── ScratchAnalyzer # Package directory
 ```
 
+## Requirements
+
+- Python >= 3.10 (due to the use of union type syntax)
+
 ## Usage
 
 First, download the package. Note that when using it, the package name is `ScratchAnalyzer`.
 
-### Preparation
+### Installation
 
-First, prepare the `project.json` of the Scratch project. Change the Scratch file extension to `.zip`, then unzip it to get the asset files and `project.json`. For analysis, you only need `project.json`, but if you need to run it, please also include the asset files.
+You can download the latest version from GitHub Releases and use the wheel file:
 
-### Analysis
+```bash
+pip install scratchanalyzer-x.x.x-xxx-xxxxx-xxx.whl
+```
+
+### Command Line Usage
+
+This library provides a command-line CLI to help you convert and analyze directly. After installing the package, you can use the `analyze-scratch` command.
+
+To view help:
+
+```bash
+analyze-scratch -h
+```
+
+Here is the list of command parameters:
+
+| Parameter | Flag | Type | Description |
+| - | - | - | - |
+| input | `--input` or `-i` | File path string | The Scratch file to parse, can be the original `.sb3` file |
+| output | `--output` or `-o` | Directory path string | The directory to output the analysis/conversion results to, can be non-existent |
+| language | `--language` or `-l` | String | Target language |
+| disable-print-progress | `--disable-print-progress` or `-dp` | No value needed | Whether to disable printing progress information |
+
+Example command:
+
+```bash
+analyze-scratch -i test2.sb3 -o out -l python-pcode # Analyze and convert test2.sb3 to Python pseudocode, output to the out directory
+```
+
+If you don't want to print progress information:
+
+```bash
+analyze-scratch -i test2.sb3 -o out -l python-pcode -dp # Same as above, but without printing progress information
+```
+
+- Note: In the output `out` directory, there will also be an `assets` folder containing the extracted contents of the Scratch project (e.g., `test2.sb3`), including assets and `project.json`.
+
+### Usage in Code
+
+#### Preparation
+
+First, prepare the `project.json` of the Scratch project. Change the Scratch file extension to `.zip`, then unzip it to get the asset files and `project.json`. For analysis, you only need `project.json`, but if you need to run the code, please also include the asset files.
+
+#### Analysis
 
 Assuming the environment is ready, use the following method:
 
-### Generate results directly into a directory
+##### Generate results directly into a directory
 
 ```python
 from ScratchAnalyzer import Project, Scratch
@@ -72,7 +121,7 @@ scratch.generate("output", language="python", print_progress=True) # The first p
 # 5. The output directory contains the generated results. Object destruction is safe and does not require manual management
 ```
 
-### Analyze code and get the generation result
+##### Analyze code and get the generation result
 
 ```python
 from ScratchAnalyzer import Project, Scratch

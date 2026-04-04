@@ -108,7 +108,6 @@
     "operator_mathop": "Scratch.math_operation(%[OPERATOR]%, Scratch.Cast.toNumber(%[NUM]%, error=False))",
     // 变量
     "data_variable": "Scratch.getVariable(instance, %[VARIABLE]%)",
-    "data_variable_replacing": "Scratch.getVariable(instance, \"{value}\")", // 适用于全局替换的模板（此特性为了解决Scratch老版遗留问题）
     "data_setvariableto": "Scratch.setVariable(instance, %[VARIABLE]%, %[VALUE]%)",
     "data_changevariableby": "Scratch.changeVariableBy(instance, %[VARIABLE]%, %[VALUE]%)",
     "data_showvariable": "Scratch.showVariable(instance, %[VARIABLE]%)",

@@ -91,6 +91,7 @@ class Scratch2OtherFile(object):
             block = block.next
             cd, indent = block.toCode(self.translator, indent, func_name, self.procedures_prototypes)
             code += ("    " * indent) + cd + block.getComment(indent, translator=self.translator) + "\n" # 此处注释获取为普通调用，因此对于有自己木块，这里不加注释，在内部添加
+        code = re.sub(r'\n\s*\n', '\n', code)
         return code
 
     def getProceduresPrototypes(self):
