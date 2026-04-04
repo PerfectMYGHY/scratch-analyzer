@@ -1,0 +1,15 @@
+{
+    // 此文件用于存储目标语言的一些内部代码的生成模板
+    // 目标语言: python-pcode
+    // 语言类型: 伪代码
+    // 本文件的占位符使用format格式
+    
+    "data_variable_getter": "get_variable(\"{value}\")", // 适用于全局替换的模板（此特性为了解决Scratch老版遗留问题）
+    "function_definition": "def {func_name}():", // 函数定义模板，{func_name}为函数名，伪代码不需要参数列表
+    "blank_substack": "pass", // Python 语言对于空子代码（如if/循环等语句函数体）需要用pass标记
+    "error_throw": "raise RuntimeError({content}) # {comment}", // 抛出错误代码
+    "exit_function": "return", // 函数结束语句
+    "is_current_clone": "if is_clone:", // 判断是否是克隆体
+    "one_line_comment": "#", // 单行注释以#开头
+    "frame_wait": "yield # 让出控制权" // 请看内部注释
+}

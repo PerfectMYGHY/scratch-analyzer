@@ -7,64 +7,64 @@ def Reset() -> None:
 class ColoredTqdm(tqdm.tqdm):
     color2: str
 
-    def __init__(self, iterable=None, desc=None, total=None, leave=True, file=None,
-                 ncols=None, mininterval=0.1, maxinterval=10.0, miniters=None,
-                 ascii=None, disable=False, unit='it', unit_scale=False,
-                 dynamic_ncols=False, smoothing=0.3, bar_format=None, initial=0,
-                 position=None, postfix=None, unit_divisor=1000, write_bytes=False,
-                 lock_args=None, nrows=None, colour=None, delay=0.0, gui=False,
-                 color1: str=Fore.LIGHTYELLOW_EX, color2: str=Fore.LIGHTGREEN_EX,
+    def __init__(self, iterable = ..., desc=..., total=..., leave=..., file=...,
+                 ncols=..., mininterval=..., maxinterval=..., miniters=...,
+                 ascii=..., disable=..., unit=..., unit_scale=...,
+                 dynamic_ncols=..., smoothing=..., bar_format=..., initial=...,
+                 position=..., postfix=..., unit_divisor=..., write_bytes=...,
+                 lock_args=..., nrows=..., colour=..., delay=..., gui=...,
+                 color1: str = ..., color2: str = ...,
                  **kwargs):
         ...
     def close(self):
         ...
 
-def ForeBlack(*args, sep:str=" ") -> str:
+def ForeBlack(*args, sep:str = ...) -> str:
     ...
 
-def ForeRed(*args, sep:str=" ") -> str:
+def ForeRed(*args, sep:str = ...) -> str:
     ...
 
-def ForeGreen(*args, sep:str=" ") -> str:
+def ForeGreen(*args, sep:str = ...) -> str:
     ...
 
-def ForeYellow(*args, sep:str=" ") -> str:
+def ForeYellow(*args, sep:str = ...) -> str:
     ...
 
-def ForeBlue(*args, sep:str=" ") -> str:
+def ForeBlue(*args, sep:str = ...) -> str:
     ...
 
-def ForeMagenta(*args, sep:str=" ") -> str:
+def ForeMagenta(*args, sep:str = ...) -> str:
     ...
 
-def ForeCyan(*args, sep:str=" ") -> str:
+def ForeCyan(*args, sep:str = ...) -> str:
     ...
 
-def ForeWhite(*args, sep:str=" ") -> str:
+def ForeWhite(*args, sep:str = ...) -> str:
     ...
 
-def ForeLightBlack(*args, sep:str=" ") -> str:
+def ForeLightBlack(*args, sep:str = ...) -> str:
     ...
 
-def ForeLightRed(*args, sep:str=" ") -> str:
+def ForeLightRed(*args, sep:str = ...) -> str:
     ...
 
-def ForeLightGreen(*args, sep:str=" ") -> str:
+def ForeLightGreen(*args, sep:str = ...) -> str:
     ...
 
-def ForeLightYellow(*args, sep:str=" ") -> str:
+def ForeLightYellow(*args, sep:str = ...) -> str:
     ...
 
-def ForeLightBlue(*args, sep:str=" ") -> str:
+def ForeLightBlue(*args, sep:str = ...) -> str:
     ...
 
-def ForeLightMagenta(*args, sep:str=" ") -> str:
+def ForeLightMagenta(*args, sep:str = ...) -> str:
     ...
 
-def ForeLightCyan(*args, sep:str=" ") -> str:
+def ForeLightCyan(*args, sep:str = ...) -> str:
     ...
 
-def ForeLightWhite(*args, sep:str=" ") -> str:
+def ForeLightWhite(*args, sep:str = ...) -> str:
     ...
 
 def StartBlack() -> None:

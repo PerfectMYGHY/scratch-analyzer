@@ -7,6 +7,8 @@ import json
 import re
 from pathlib import Path
 
+from .Project import Block
+
 
 def replaceName(name: str):
     result = ""
@@ -59,7 +61,7 @@ class Scratch2OtherFile(object):
             return "_"+custom_block.data["mutation"]["proccode"].replace(" ", "_").replace("%", "_"), custom_block.data["mutation"]
         return "", {}
 
-    def toCodeFrom(self, head):
+    def toCodeFrom(self, head: Block):
         func_name = f"opcode_{head.opcode}_"
         if func_name not in self.counts:
             self.counts[func_name] = 1
@@ -70,7 +72,7 @@ class Scratch2OtherFile(object):
         func_name += special
         func_name = replaceName(func_name)
         self.blockToFuncName[head] = func_name
-        code = f"async def {func_name}(instance, task_id):\n"
+        code = f"{self.translator.function_definition.format(func_name=func_name)}\n"
         # 添加记录
         if head.opcode == "procedures_definition":
             self.procedures_prototypes[func_name] = {
@@ -82,13 +84,13 @@ class Scratch2OtherFile(object):
             }
         indent = 1
         if not head.next:
-            code += "    ...\n"
+            code += f"    {self.translator.blank_substack}\n"
             return code
         block = head
         while block.next:
             block = block.next
             cd, indent = block.toCode(self.translator, indent, func_name, self.procedures_prototypes)
-            code += ("    " * indent) + cd + block.getComment(indent) + "\n"
+            code += ("    " * indent) + cd + block.getComment(indent, translator=self.translator) + "\n" # 此处注释获取为普通调用，因此对于有自己木块，这里不加注释，在内部添加
         return code
 
     def getProceduresPrototypes(self):
@@ -201,10 +203,10 @@ class Scratch2OtherFile(object):
 
     def analyze(self, stage = None, print_progress=True):
         data = f'''"""
-Scratch2Python库生成
-注意：由于是机器翻译代码，本文件会有多处地方出现冗余的括号、多余的代码等。请不要以此文件来学习Python。
+ScratchAnalyzer库生成
+注意：由于是机器翻译代码，本文件会有多处地方出现冗余的括号、多余的代码等。请不要以此文件来学习。
 """
-import Scratch4Python as Scratch # 专用Scratch功能封装库
+import ScratchRuntime as Scratch # 专用Scratch功能封装库
 {"import target_Stage as Stage # 引入舞台以使用公共变量" if not self.isStage else ""}
 
 # 变量
@@ -258,14 +260,14 @@ import Scratch4Python as Scratch # 专用Scratch功能封装库
             code = None
             for vid, variable in self.target.variables.items():
                 if variable[0] == value:
-                    code = self.translator.data_variable_replacing.format(value=value)
+                    code = self.translator.data_variable_getter.format(value=value)
                     hasVariable = True
                     break
             if not hasVariable:
                 if stage:
                     for vid, variable in stage.variables.items():
                         if variable[0] == value:
-                            code = self.translator.data_variable_replacing.format(value=value)
+                            code = self.translator.data_variable_getter.format(value=value)
                             hasVariable = True
                             break
                 if not hasVariable:

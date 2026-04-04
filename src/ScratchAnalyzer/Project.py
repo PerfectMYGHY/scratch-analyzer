@@ -1,20 +1,21 @@
 import re
 
-from .errors import UnsupportedError
+from .translator import WrappedTranslator
 from .iostream import ColoredTqdm
 from .Cast import toCode
 from .public import substack_opcodes, substack_opcodes_need_flush
 import json
 import warnings
+from typing import cast
 
 
 class Input(object):
-    def __init__(self, _input, target, name):
+    def __init__(self, _input: list, target, name: str):
         self.data = _input
         self.target = target
         self.name = name
 
-    def toCode(self, translator, func_name, procedures_prototypes):
+    def toCode(self, translator: WrappedTranslator, func_name: str, procedures_prototypes):
         if isinstance(self.data[1], str):
             try:
                 fieldBlock = self.target.blocks[self.data[1]]
@@ -25,20 +26,20 @@ class Input(object):
                     blockId = self.data[1]
                     code, _ = self.target.blocks[blockId].toCode(translator, 1, func_name, procedures_prototypes)
                 except KeyError:
-                    code = f'Scratch.getVariable(instance, "{self.data[1]}")'
+                    code = translator.data_variable_getter.format(value=self.data[1]) # 这种情况是为了兼容Scratch 2.0转换后的遗留问题
         elif self.data[1]:
             value = self.data[1][1]
             code = f"!!![SPECIAL_CODE_TO_GLOBAL][{value}]!!!"
         else:
-            code = '""'
+            code = '""' # 任何我认识的语言应该都是""表示空字符串吧
         return code
 
 class Field(object):
-    def __init__(self, field, target):
+    def __init__(self, field: list, target):
         self.data = field
         self.target = target
 
-    def toCode(self, translator):
+    def toCode(self, translator: WrappedTranslator):
         return toCode(self.data[0])
 
 class Block(object):
@@ -63,10 +64,18 @@ class Block(object):
         self.comment = block.get("comment")
         self.data = block
 
-    def getComment(self, indent, uniqueEnv=False):
-        if self.comment and (self.opcode not in substack_opcodes if not uniqueEnv else True):
+    def getComment(self, indent: int, translator: WrappedTranslator, uniqueEnv: bool = False) -> str:
+        """
+        获取本积木块的注释
+
+        :param indent: 注释若换行采用的缩进数
+        :param translator: 翻译器，用于获取注释标志
+        :param uniqueEnv: 是否在特殊环境，默认False，若为False，则在当前积木为带子块积木时返回无注释，否则获取注释
+        :return: 注释代码
+        """
+        if self.comment and (not uniqueEnv and self.opcode not in substack_opcodes):
             text = self.target.comments[self.comment]["text"]
-            return f" # {text}".replace("\n", "    " * indent + "# ") # 保证多行注释正常
+            return f" {translator.one_line_comment} {text}".replace("\n", "    " * indent + f"{translator.one_line_comment} ") # 保证多行注释正常
         return ""
     
     def compute_relation(self):
@@ -78,7 +87,7 @@ class Block(object):
         self.fields = {k: Field(v, self.target) for k, v in self._fields.items()}
         self.computed = True
 
-    def generateArgs(self, arg_ids, args, translator, func_name, procedures_prototypes):
+    def generateArgs(self, arg_ids: list[str], args: dict[str, Input], translator: WrappedTranslator, func_name: str, procedures_prototypes: dict[str, dict]) -> str:
         result = {}
         for arg_id in arg_ids:
             if arg_id not in args: # 没有传入参数则跳过，内部会使用默认值
@@ -90,13 +99,14 @@ class Block(object):
         ret += "}"
         return ret
 
-    def toCode(self, translator, indent, func_name, procedures_prototypes):
+    def toCode(self, translator: WrappedTranslator, indent: int, func_name: str, procedures_prototypes: dict[str, dict]) -> tuple[str, int]:
         if self.opcode not in substack_opcodes: # shadow指的是是否有SUBSTACK（子积木，就比如“如果”里包着的积木）
             try:
                 code = getattr(translator, self.opcode)
             except AttributeError:
                 warnings.warn("不支持的积木操作代码： %s，若警告不会停止则默认继续转换（无法翻译的代码将以注释替代！）" % self.opcode)
-                code = f"raise RuntimeError('未成功翻译的代码，操作代码：{self.opcode}，请手动翻译！') # !!!不支持的积木操作代码： {self.opcode}，请手动翻译！！！"
+                code = translator.error_throw.format(content=f'"未成功翻译的代码，操作代码：{self.opcode}，请手动翻译！"', comment=f"!!!不支持的积木操作代码： {self.opcode}，请手动翻译!!!")
+            # 添加注释: 外部调用toCode后自动添加注释
             # 自定义函数执行的特殊处理
             if self.opcode == "procedures_call":
                 code = (code.replace("%[FUNC_NAME]%", "!!![FUNC_NAME_TO_GLOBAL][{proccode}]!!!".format(proccode=self.data["mutation"]["proccode"]))
@@ -112,21 +122,23 @@ class Block(object):
             pattern = r'%\[.*?\]%'  # 非贪婪匹配
             code = re.sub(pattern, 'None', code)
             if self.opcode == "control_stop" and self.fields["STOP_OPTION"].data[0] != "other scripts in sprite":
-                code += "\n" + "    " * indent + "return"
+                code += "\n" + "    " * indent + translator.exit_function
             if self.opcode == "control_delete_this_clone":
-                code += "\n" + "    " * indent + "if instance.isClone:"
-                code += "\n" + "    " * (indent+1) + "return"
+                code += "\n" + "    " * indent + translator.is_current_clone
+                code += "\n" + "    " * (indent + 1) + translator.exit_function
         else:
             try:
                 code = getattr(translator, self.opcode)  # 获取主体代码
             except AttributeError:
                 warnings.warn("不支持的积木操作代码： %s，若警告不会停止则默认继续转换（无法翻译的代码将以注释替代！）" % self.opcode)
-                code = f"raise RuntimeError('未成功翻译的代码，操作代码：{self.opcode}，请手动翻译！') # !!!不支持的积木操作代码： {self.opcode}，请手动翻译！！！"
+                code = translator.error_throw.format(content=f'"未成功翻译的代码，操作代码：{self.opcode}，请手动翻译！"', comment=f"!!!不支持的积木操作代码： {self.opcode}，请手动翻译!!!")
+            # 添加注释: 特殊代码需要特殊处理，原因请见Scratch.py或下方
+            code += self.getComment(indent + 1, translator, uniqueEnv=True)
             # 将参数格式化进去
             for name, inp in self.inputs.items():
                 if name in ("SUBSTACK", "SUBSTACK2"):
                     continue
-                code = code.replace(f'%[{name}]%', inp.toCode(translator, func_name, procedures_prototypes)) + self.getComment(indent + 1, uniqueEnv=True)
+                code = code.replace(f'%[{name}]%', inp.toCode(translator, func_name, procedures_prototypes))
             for name, field in self.fields.items():
                 code = code.replace(f'%[{name}]%', field.toCode(translator))
             pattern = r'%\[.*?\]%'  # 非贪婪匹配
@@ -134,42 +146,45 @@ class Block(object):
             indent += 1
             code += "\n"
             if self.inputs["SUBSTACK"].data[1]:
-                head = self.target.blocks[self.inputs["SUBSTACK"].data[1]]
+                head = cast(Block, self.target.blocks[self.inputs["SUBSTACK"].data[1]])
                 block = head
                 while True:
                     cd, indent = block.toCode(translator, indent, func_name, procedures_prototypes)
-                    code += ("    " * indent) + cd + block.getComment(indent) + "\n"
-                    block = block.next
+                    code += ("    " * indent) + cd + block.getComment(indent, translator) + "\n" # 此处注释获取为普通调用，因此对于有自己木块，这里不加注释，在内部添加
+                    block = cast(Block | None, block.next)
                     if not block:
                         break
                 if substack_opcodes_need_flush[self.opcode]:
-                    if func_name in procedures_prototypes and procedures_prototypes[func_name]["warp"]:
+                    if func_name in procedures_prototypes and procedures_prototypes[func_name]["warp"]: # 如果时自定义积木且使用了warp
                         suffix = ""
                     else:
-                        suffix = "await instance.wait_next_frame() # 普通情况：每次循环末尾都等待刷新"
+                        suffix = translator.frame_wait
                 else:
                     suffix = ""
                 code += ("    " * indent) + suffix + "\n"
             else:
-                code += ("    " * indent) + "...\n"
+                code += ("    " * indent) + f"{translator.blank_substack}\n"
             if "SUBSTACK2" in self.inputs:
                 code += "{indent}{before}\n".format(indent="    " * (indent-1),before=getattr(translator, self.opcode+"_before_2"))
                 if self.inputs["SUBSTACK2"].data[1]:
-                    head = self.target.blocks[self.inputs["SUBSTACK2"].data[1]]
+                    head = cast(Block, self.target.blocks[self.inputs["SUBSTACK2"].data[1]])
                     block = head
                     while True:
                         cd, indent = block.toCode(translator, indent, func_name, procedures_prototypes)
-                        code += ("    " * indent) + cd + block.getComment(indent) + "\n"
-                        block = block.next
+                        code += ("    " * indent) + cd + block.getComment(indent, translator) + "\n" # 此处注释获取为普通调用，因此对于有自己木块，这里不加注释，在内部添加
+                        block = cast(Block | None, block.next)
                         if not block:
                             break
                     if substack_opcodes_need_flush[self.opcode]:
-                        suffix = "await instance.wait_next_frame() # 普通情况：每次循环末尾都等待刷新"
+                        if func_name in procedures_prototypes and procedures_prototypes[func_name]["warp"]: # 如果时自定义积木且使用了warp
+                            suffix = ""
+                        else:
+                            suffix = translator.frame_wait
                     else:
                         suffix = ""
                     code += ("    " * indent) + suffix + "\n"
                 else:
-                    code += ("    " * indent) + "...\n"
+                    code += ("    " * indent) + f"{translator.blank_substack}\n"
             indent -= 1
         return code, indent
 

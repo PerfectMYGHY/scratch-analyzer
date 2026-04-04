@@ -151,7 +151,7 @@ class Block(object):
     def __init__(self, block: BlockDict, target: Target):
         ...
 
-    def getComment(self, indent: int, uniqueEnv: bool=False) -> str:
+    def getComment(self, indent: int, translator: WrappedTranslator, uniqueEnv: bool = ...) -> str:
         ...
 
     def compute_relation(self):
@@ -187,7 +187,7 @@ class Target(object):
     tempo: Optional[int]
     args: Dict[str, Any]
 
-    def __init__(self, target: TargetDict, print_progress: bool=True):
+    def __init__(self, target: TargetDict, print_progress: bool = ...):
         ...
 
 class Monitor(object):
@@ -228,8 +228,8 @@ class Project(object):
     extensions: Dict[str, Extension]
     meta: Meta
 
-    def __init__(self, project: ProjectDict, print_progress: bool=True):
+    def __init__(self, project: ProjectDict, print_progress: bool = ...):
         ...
 
-    def _parse(self, print_progress: bool=True) -> None:
+    def _parse(self, print_progress: bool = ...) -> None:
         ...

@@ -36,7 +36,7 @@ class Scratch2OtherFile(object):
     procedures_prototypes: Dict[str, dict]
     assets: AssetsDict
 
-    def __init__(self, language: Language, name: str, target: Target, isStage: bool=False):
+    def __init__(self, language: Language, name: str, target: Target, isStage: bool = ...):
         ...
 
     def getAssets(self) -> None:
@@ -81,10 +81,10 @@ class Scratch2OtherFile(object):
     def getArgMap(self, args: dict[str, str]) -> str:
         ...
 
-    def analyze(self, stage: Optional[Target] = None, print_progress: bool=True) -> tuple[str, str]:
+    def analyze(self, stage: Optional[Target] = None, print_progress: bool = ...) -> tuple[str, str]:
         ...
 
-    def generate(self, output: Path, stage: Optional[Target] = None, print_progress: bool=True) -> None:
+    def generate(self, output: Path, stage: Optional[Target] = None, print_progress: bool = ...) -> None:
         ...
 
 class Scratch(object):
@@ -94,8 +94,8 @@ class Scratch(object):
     def __init__(self, project: Project):
         ...
 
-    def analyze(self, language: Language="python", print_progress: bool=True) -> tuple[dict[str, tuple[str, str]], tuple[str, str]]:
+    def analyze(self, language: Language="python", print_progress: bool = ...) -> tuple[dict[str, tuple[str, str]], tuple[str, str]]:
         ...
 
-    def generate(self, output: Path | str, language: Language="python", print_progress: bool=True) -> None:
+    def generate(self, output: Path | str, language: Language="python", print_progress: bool = ...) -> None:
         ...
