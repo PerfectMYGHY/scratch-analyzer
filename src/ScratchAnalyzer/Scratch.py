@@ -202,7 +202,7 @@ class Scratch2OtherFile(object):
         code += "}"
         return code
 
-    def analyze(self, stage = None, print_progress=True, with_comments=True):
+    def analyze(self, stage = None, print_progress=True, with_comments=True, with_variables=True):
         data = f'''"""
 ScratchAnalyzer库生成
 注意：由于是机器翻译代码，本文件会有多处地方出现冗余的括号、多余的代码等。请不要以此文件来学习。
@@ -215,15 +215,18 @@ import ScratchRuntime as Scratch # 专用Scratch功能封装库
 '''
         progress_generator = ColoredTqdm if print_progress else lambda x, **kwargs: x
 
-        # 生成变量
-        for variable in progress_generator(self.variables, desc="正在生成变量代码"):
-            if variable["type"] == "v":
-                if isinstance(variable["default"], int):
-                    data += f"{variable['name']} = {variable['default']} # Scratch变量——原名:{variable['real_name']}\n"
+        if with_variables:
+            # 生成变量
+            for variable in progress_generator(self.variables, desc="正在生成变量代码"):
+                if variable["type"] == "v":
+                    if isinstance(variable["default"], int):
+                        data += f"{variable['name']} = {variable['default']} # Scratch变量——原名:{variable['real_name']}\n"
+                    else:
+                        data += f"{variable['name']} = '{variable['default']}' # Scratch变量——原名:{variable['real_name']}\n"
                 else:
-                    data += f"{variable['name']} = '{variable['default']}' # Scratch变量——原名:{variable['real_name']}\n"
-            else:
-                data += f"{variable['name']} = {variable['default']} # Scratch列表——原名:{variable['real_name']}\n"
+                    data += f"{variable['name']} = {variable['default']} # Scratch列表——原名:{variable['real_name']}\n"
+        else:
+            data += "# 变量代码被禁用\n"
 
         data += "\n# 函数\n\n"
         # 生成函数代码
@@ -318,8 +321,8 @@ import ScratchRuntime as Scratch # 专用Scratch功能封装库
 
         return f"target_{self.name}.py", data
 
-    def generate(self, output, stage = None, print_progress=True, with_comments=True):
-        name, data = self.analyze(stage, print_progress=print_progress, with_comments=with_comments)
+    def generate(self, output, stage = None, print_progress=True, with_comments=True, with_variables=True):
+        name, data = self.analyze(stage, print_progress=print_progress, with_comments=with_comments, with_variables=with_variables)
         with open(output / name, "w", encoding="utf-8") as file:
             file.write(data)
 
@@ -333,7 +336,7 @@ class Scratch(object):
         self.project = project
         self.public_id_to_variable_name = {}
 
-    def analyze(self, language="python", print_progress=True, with_comments=True):
+    def analyze(self, language="python", print_progress=True, with_comments=True, with_variables=True):
         """
         分析Scratch作品并得到分析结果
 
@@ -382,7 +385,7 @@ class Scratch(object):
             if block.opcode in entries_block_opcodes:
                 stage_file.entries.append(block)
         # 开始生成舞台文件
-        stage_name, stage_data = stage_file.analyze(print_progress=print_progress, with_comments=with_comments)
+        stage_name, stage_data = stage_file.analyze(print_progress=print_progress, with_comments=with_comments, with_variables=with_variables)
         result["Stage"] = stage_name, stage_data
 
         # 生成剩余标准角色
@@ -416,7 +419,7 @@ class Scratch(object):
                 if block.opcode in entries_block_opcodes:
                     target_file.entries.append(block)
             # 开始生成舞台文件
-            file_name, file_data = target_file.analyze(stage=stage, print_progress=print_progress, with_comments=with_comments)
+            file_name, file_data = target_file.analyze(stage=stage, print_progress=print_progress, with_comments=with_comments, with_variables=with_variables)
             result[name] = file_name, file_data
         # 生成数据
         imports_code = ""
@@ -430,7 +433,7 @@ class Scratch(object):
 
         return result, (imports_code, inits)
 
-    def generate(self, output, language="python", print_progress=True, with_comments=True):
+    def generate(self, output, language="python", print_progress=True, with_comments=True, with_variables=True):
         """
         分析Scratch作品并将分析结果写入目录
 
@@ -441,7 +444,7 @@ class Scratch(object):
         :return: 无
         """
         output = Path(output)
-        result, (imports_code, inits) = self.analyze(language, print_progress, with_comments=with_comments)
+        result, (imports_code, inits) = self.analyze(language, print_progress, with_comments=with_comments, with_variables=with_variables)
         progress_generator = ColoredTqdm if print_progress else lambda x, **kwargs: x
         # 生成并复制每个角色文件
         for name, (file_name, file_data) in progress_generator(result.items(), desc="正在写入角色文件"):

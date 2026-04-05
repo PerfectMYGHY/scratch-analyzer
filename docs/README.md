@@ -2,7 +2,7 @@
 
 English version README.md: [README.english.md](README.english.md)
 
-![Version](https://img.shields.io/badge/version-0.1.3-blue)
+![Version](https://img.shields.io/badge/version-0.1.5-blue)
 ![Status](https://img.shields.io/badge/status-alpha-orange)
 
 Scratch 解析库。一个使用Python制作的能够分析Python代码的软件包。
@@ -77,6 +77,7 @@ analyze-scratch -h
 | language | `--language`或`-l` | 字符串 | 目标语言 |
 | disable-print-progress | `--disable-print-progress`或`-dp` | 不需要值 | 是否禁用打印进度信息 |
 | no-comments | `--no-comments`或`-nc` | 不需要值 | 是否禁用翻译Scratch注释 |
+| no-variables | `--no-variables`或`-nv` | 不需要值 | 是否禁用翻译Scratch变量/列表内容 |
 
 示例命令：
 
@@ -87,7 +88,7 @@ analyze-scratch -i test2.sb3 -o out -l python-pcode # 将test2.sb3分析转换�
 如果不需要打印进度信息且不需要Scratch注释：
 
 ```bash
-analyze-scratch -i test2.sb3 -o out -l python-pcode -dp -nc # 将test2.sb3分析转换为python伪代码，并输出到out目录中，不打印进度信息，不转换注释
+analyze-scratch -i test2.sb3 -o out -l python-pcode -dp -nc -nv # 将test2.sb3分析转换为python伪代码，并输出到out目录中，不打印进度信息，不转换注释，不转换Scratch变量/列表
 ```
 
 - 注意：在输出的`out`目录里，还会有`assets`文件夹，其中是将Scratch项目（如`test2.sb3`）解压后的内容，包含素材和`project.json`
@@ -227,6 +228,7 @@ class Scratch(object):
 | language | 目标语言，默认为`python` |
 | print_progress | 是否打印进度信息，默认为`True` |
 | with_comments | 是否转换Scratch注释，默认为`True` |
+| with_variables | 是否转换Scratch变量/列表，默认为`True` |
 
 返回值格式：
 
@@ -252,6 +254,7 @@ contents, (imports_code, inits) = scratch.analyze(...)
 | language | str | 目标语言，默认为`python` |
 | print_progress | bool | 是否打印进度信息，默认为`True` |
 | with_comments | bool | 是否转换Scratch注释，默认为`True` |
+| with_variables | bool | 是否转换Scratch变量/列表，默认为`True` |
 
 没有返回值，内部调用analyze并将结果写入文件，同时生成入口文件`main.py`
 

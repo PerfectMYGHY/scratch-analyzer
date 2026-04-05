@@ -20,6 +20,7 @@ def main() -> int:
     parser.add_argument("--language", "-l", default="python", choices=supported_languages, type=str, required=False, help="转换成的语言")
     parser.add_argument("--disable-print-progress", "-dp", action='store_true', help="是否禁用输出进度条")
     parser.add_argument("--no-comments", "-nc", action='store_true', help="是否禁用翻译Scratch注释")
+    parser.add_argument("--no-variables", "-nv", action='store_true', help="是否禁用翻译Scratch变量/列表内容")
     args = parser.parse_args()
 
     if os.path.isfile(args.output):
@@ -70,7 +71,8 @@ def main() -> int:
 
     # 步骤4：生成数据
     scratch = Scratch(project)
-    scratch.generate(Path(args.output), language=args.language, print_progress=not args.disable_print_progress, with_comments=not args.no_comments)
+    scratch.generate(Path(args.output), language=args.language, print_progress=not args.disable_print_progress,
+                     with_comments=not args.no_comments, with_variables=not args.no_variables)
 
     return 0
 

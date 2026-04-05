@@ -2,7 +2,7 @@
 
 中文版 README.md: [README.md](README.md)
 
-![Version](https://img.shields.io/badge/version-0.1.3-blue)
+![Version](https://img.shields.io/badge/version-0.1.5-blue)
 ![Status](https://img.shields.io/badge/status-alpha-orange)
 
 A Scratch parsing library. A Python package capable of analyzing Scratch code.
@@ -74,6 +74,8 @@ Here is the list of command parameters:
 | output | `--output` or `-o` | Directory path string | The directory to output the analysis/conversion results to, can be non-existent |
 | language | `--language` or `-l` | String | Target language |
 | disable-print-progress | `--disable-print-progress` or `-dp` | No value needed | Whether to disable printing progress information |
+| no-comments | `--no-comments` or `-nc` | No value needed | Whether to disable translating Scratch comments |
+| no-variables | `--no-variables` or `-nv` | No value needed | Whether to disable translating Scratch variable/list contents |
 
 Example command:
 
@@ -81,10 +83,10 @@ Example command:
 analyze-scratch -i test2.sb3 -o out -l python-pcode # Analyze and convert test2.sb3 to Python pseudocode, output to the out directory
 ```
 
-If you don't want to print progress information:
+If you don't want to print progress information, disable comments, and disable variables:
 
 ```bash
-analyze-scratch -i test2.sb3 -o out -l python-pcode -dp # Same as above, but without printing progress information
+analyze-scratch -i test2.sb3 -o out -l python-pcode -dp -nc -nv # Same as above, without progress info, without comments, without variable/list contents
 ```
 
 - Note: In the output `out` directory, there will also be an `assets` folder containing the extracted contents of the Scratch project (e.g., `test2.sb3`), including assets and `project.json`.
@@ -187,7 +189,7 @@ Automatically parses the project information, extracts project metadata, creates
 
 ### Scratch Class
 
-The `Scratch` class has a constructor, `analyze`, and `generate` methods. Its definition in the stub file:
+The `Scratch` class has a constructor, `analyze`, and `generate` methods. Its definition:
 
 ```python
 class Scratch(object):
@@ -197,10 +199,10 @@ class Scratch(object):
     def __init__(self, project: Project):
         ...
 
-    def analyze(self, language: Language="python", print_progress: bool=True) -> tuple[dict[str, tuple[str, str]], tuple[str, str]]:
+    def analyze(self, language: Language="python", print_progress: bool=True, with_comments: bool = True, with_variables: bool = True) -> tuple[dict[str, tuple[str, str]], tuple[str, str]]:
         ...
 
-    def generate(self, output: Path | str, language: Language="python", print_progress: bool=True) -> None:
+    def generate(self, output: Path | str, language: Language="python", print_progress: bool=True, with_comments: bool = True, with_variables: bool = True) -> None:
         ...
 ```
 
@@ -223,6 +225,8 @@ Parameter list:
 | - | - |
 | language | Target language, defaults to `python` |
 | print_progress | Whether to print progress information, defaults to `True` |
+| with_comments | Whether to translate Scratch comments, defaults to `True` |
+| with_variables | Whether to translate Scratch variable/list contents, defaults to `True` |
 
 Return value format:
 
@@ -247,6 +251,8 @@ Parameter list:
 | output | Path or str | Output directory |
 | language | str | Target language, defaults to `python` |
 | print_progress | bool | Whether to print progress information, defaults to `True` |
+| with_comments | bool | Whether to translate Scratch comments, defaults to `True` |
+| with_variables | bool | Whether to translate Scratch variable/list contents, defaults to `True` |
 
 No return value. Internally calls analyze and writes the results to files, also generates the entry file `main.py`.
 
