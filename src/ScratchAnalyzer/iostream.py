@@ -24,21 +24,17 @@ class ColoredTqdm(tqdm.tqdm):
                  dynamic_ncols=False, smoothing=0.3, bar_format=None, initial=0,
                  position=None, postfix=None, unit_divisor=1000, write_bytes=False,
                  lock_args=None, nrows=None, colour=None, delay=0.0, gui=False,
-                 color1=Fore.LIGHTYELLOW_EX, color2=Fore.LIGHTGREEN_EX,
                  **kwargs):
-        print(color1, end="", flush=True)
-        self.color2 = color2
         super().__init__(iterable, desc, total, leave, file,
                  ncols, mininterval, maxinterval, miniters,
                  ascii, disable, unit, unit_scale,
                  dynamic_ncols, smoothing, bar_format, initial,
                  position, postfix, unit_divisor, write_bytes,
-                 lock_args, nrows, colour, delay, gui,
+                 lock_args, nrows, colour or "#1fd18b", delay, gui,
                  **kwargs)
+    
     def close(self):
-        print(self.color2, end="", flush=True)
         super().close()
-        print(Fore.RESET, end="", flush=True)
 
 def _makeAll():
     colors = [

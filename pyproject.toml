@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ScratchAnalyzer"
-version = "0.1.4.post1"
+version = "0.1.4.post2"
 description = "A Scratch parser that can generate Python code, ensuring that the logic remains as it is, only unable to run."
 readme = "docs/README.md"
 license = {text = "MIT"}

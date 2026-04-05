@@ -1,5 +1,5 @@
 import tqdm
-from colorama import Fore
+from typing import Iterable, Optional, Any
 
 def Reset() -> None:
     ...
@@ -7,15 +7,20 @@ def Reset() -> None:
 class ColoredTqdm(tqdm.tqdm):
     color2: str
 
-    def __init__(self, iterable = ..., desc=..., total=..., leave=..., file=...,
-                 ncols=..., mininterval=..., maxinterval=..., miniters=...,
-                 ascii=..., disable=..., unit=..., unit_scale=...,
-                 dynamic_ncols=..., smoothing=..., bar_format=..., initial=...,
-                 position=..., postfix=..., unit_divisor=..., write_bytes=...,
-                 lock_args=..., nrows=..., colour=..., delay=..., gui=...,
-                 color1: str = ..., color2: str = ...,
+    def __init__(self, iterable: Optional[Iterable] = ..., desc: Optional[str] = ...,
+                 total: Optional[int] = ..., leave: bool = ..., file: Optional[Any] = ...,
+                 ncols: Optional[int] = ..., mininterval: float = ...,
+                 maxinterval: float = ..., miniters: Optional[Any] = ...,
+                 ascii: Optional[Any] = ..., disable: bool = ..., unit: str = ...,
+                 unit_scale: bool = ..., dynamic_ncols: bool = ...,
+                 smoothing: float = ..., bar_format: Optional[Any] = ..., initial: int = ...,
+                 position: Optional[Any] = ..., postfix: Optional[str] = ...,
+                 unit_divisor: int = ..., write_bytes: Optional[Any] = ...,
+                 lock_args: Optional[Any] = ..., nrows: Optional[int] = ...,
+                 colour: Optional[str] = ..., delay: float = ..., gui: bool = ...,
                  **kwargs):
         ...
+    
     def close(self):
         ...
 
