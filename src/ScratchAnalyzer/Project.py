@@ -276,6 +276,12 @@ class Meta(object):
 
 class Project(object):
     def __init__(self, project, print_progress=True):
+        """
+        构造函数
+
+        :param project: 项目数据字典
+        :param print_progress: 是否打印进度信息
+        """
         self.project = project
         self._parse(print_progress=print_progress)
 

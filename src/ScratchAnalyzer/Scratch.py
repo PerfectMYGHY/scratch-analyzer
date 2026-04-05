@@ -325,10 +325,23 @@ import ScratchRuntime as Scratch # 专用Scratch功能封装库
 
 class Scratch(object):
     def __init__(self, project):
+        """
+        构造函数
+
+        :param project: 项目对象
+        """
         self.project = project
         self.public_id_to_variable_name = {}
 
     def analyze(self, language="python", print_progress=True, with_comments=True):
+        """
+        分析Scratch作品并得到分析结果
+
+        :param language: 目标语言
+        :param print_progress: 是否打印进度
+        :param with_comments: 是否翻译注释
+        :return: 分析结果
+        """
         result = {}
 
         language = language.lower()
@@ -418,6 +431,15 @@ class Scratch(object):
         return result, (imports_code, inits)
 
     def generate(self, output, language="python", print_progress=True, with_comments=True):
+        """
+        分析Scratch作品并将分析结果写入目录
+
+        :param output: 目标输出目录
+        :param language: 目标语言
+        :param print_progress: 是否打印进度
+        :param with_comments: 是否翻译注释
+        :return: 无
+        """
         output = Path(output)
         result, (imports_code, inits) = self.analyze(language, print_progress, with_comments=with_comments)
         progress_generator = ColoredTqdm if print_progress else lambda x, **kwargs: x
