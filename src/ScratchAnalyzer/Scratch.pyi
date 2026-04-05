@@ -45,7 +45,7 @@ class Scratch2OtherFile(object):
     def getSpecialName(self, head: Block) -> tuple[str, dict]:
         ...
 
-    def toCodeFrom(self, head: Block) -> str:
+    def toCodeFrom(self, head: Block, with_comments: bool = ...) -> str:
         ...
 
     def getProceduresPrototypes(self) -> str:
@@ -81,10 +81,10 @@ class Scratch2OtherFile(object):
     def getArgMap(self, args: dict[str, str]) -> str:
         ...
 
-    def analyze(self, stage: Optional[Target] = None, print_progress: bool = ...) -> tuple[str, str]:
+    def analyze(self, stage: Optional[Target] = None, print_progress: bool = ..., with_comments: bool = ...) -> tuple[str, str]:
         ...
 
-    def generate(self, output: Path, stage: Optional[Target] = None, print_progress: bool = ...) -> None:
+    def generate(self, output: Path, stage: Optional[Target] = None, print_progress: bool = ..., with_comments: bool = ...) -> None:
         ...
 
 class Scratch(object):
@@ -94,8 +94,8 @@ class Scratch(object):
     def __init__(self, project: Project):
         ...
 
-    def analyze(self, language: Language="python", print_progress: bool = ...) -> tuple[dict[str, tuple[str, str]], tuple[str, str]]:
+    def analyze(self, language: Language="python", print_progress: bool = ..., with_comments: bool = ...) -> tuple[dict[str, tuple[str, str]], tuple[str, str]]:
         ...
 
-    def generate(self, output: Path | str, language: Language="python", print_progress: bool = ...) -> None:
+    def generate(self, output: Path | str, language: Language="python", print_progress: bool = ..., with_comments: bool = ...) -> None:
         ...

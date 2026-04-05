@@ -76,6 +76,7 @@ analyze-scratch -h
 | output | `--output`或`-o` | 目录路径字符串 | 要分析转换生成到的目录名，可以不存在 |
 | language | `--language`或`-l` | 字符串 | 目标语言 |
 | disable-print-progress | `--disable-print-progress`或`-dp` | 不需要值 | 是否禁用打印进度信息 |
+| no-comments | `--no-comments`或`-nc` | 不需要值 | 是否禁用翻译Scratch注释 |
 
 示例命令：
 
@@ -83,10 +84,10 @@ analyze-scratch -h
 analyze-scratch -i test2.sb3 -o out -l python-pcode # 将test2.sb3分析转换为python伪代码，并输出到out目录中
 ```
 
-如果不需要打印进度信息：
+如果不需要打印进度信息且不需要Scratch注释：
 
 ```bash
-analyze-scratch -i test2.sb3 -o out -l python-pcode -dp # 将test2.sb3分析转换为python伪代码，并输出到out目录中，不打印进度信息
+analyze-scratch -i test2.sb3 -o out -l python-pcode -dp -nc # 将test2.sb3分析转换为python伪代码，并输出到out目录中，不打印进度信息，不转换注释
 ```
 
 - 注意：在输出的`out`目录里，还会有`assets`文件夹，其中是将Scratch项目（如`test2.sb3`）解压后的内容，包含素材和`project.json`
@@ -189,7 +190,7 @@ class Project(object):
 
 ### Scratch 类
 
-`Scratch`类有构造函数、`analyze`、`generate`这几个方法对外。其存根文件中的定义：
+`Scratch`类有构造函数、`analyze`、`generate`这几个方法对外。其定义：
 
 ```python
 class Scratch(object):
@@ -199,10 +200,10 @@ class Scratch(object):
     def __init__(self, project: Project):
         ...
 
-    def analyze(self, language: Language="python", print_progress: bool=True) -> tuple[dict[str, tuple[str, str]], tuple[str, str]]:
+    def analyze(self, language: Language="python", print_progress: bool=True, with_comments: bool = True) -> tuple[dict[str, tuple[str, str]], tuple[str, str]]:
         ...
 
-    def generate(self, output: Path | str, language: Language="python", print_progress: bool=True) -> None:
+    def generate(self, output: Path | str, language: Language="python", print_progress: bool=True, with_comments: bool = True) -> None:
         ...
 ```
 
@@ -225,6 +226,7 @@ class Scratch(object):
 | - | - |
 | language | 目标语言，默认为`python` |
 | print_progress | 是否打印进度信息，默认为`True` |
+| with_comments | 是否转换Scratch注释，默认为`True` |
 
 返回值格式：
 
@@ -249,6 +251,7 @@ contents, (imports_code, inits) = scratch.analyze(...)
 | output | Path 或 str | 输出目录 |
 | language | str | 目标语言，默认为`python` |
 | print_progress | bool | 是否打印进度信息，默认为`True` |
+| with_comments | bool | 是否转换Scratch注释，默认为`True` |
 
 没有返回值，内部调用analyze并将结果写入文件，同时生成入口文件`main.py`
 

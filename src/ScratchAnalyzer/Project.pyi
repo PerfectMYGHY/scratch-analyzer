@@ -151,7 +151,7 @@ class Block(object):
     def __init__(self, block: BlockDict, target: Target):
         ...
 
-    def getComment(self, indent: int, translator: WrappedTranslator, uniqueEnv: bool = ...) -> str:
+    def getComment(self, indent: int, translator: WrappedTranslator, uniqueEnv: bool = ..., with_comments: bool = ...) -> str:
         ...
 
     def compute_relation(self):
@@ -160,7 +160,7 @@ class Block(object):
     def generateArgs(self, arg_ids: list[str], args: dict[str, Input], translator: WrappedTranslator, func_name: str, procedures_prototypes: dict[str, dict]) -> str:
         ...
 
-    def toCode(self, translator: WrappedTranslator, indent: int, func_name: str, procedures_prototypes: dict[str, dict]) -> tuple[str, int]:
+    def toCode(self, translator: WrappedTranslator, indent: int, func_name: str, procedures_prototypes: dict[str, dict], with_comments: bool = ...) -> tuple[str, int]:
         ...
 
 class Target(object):

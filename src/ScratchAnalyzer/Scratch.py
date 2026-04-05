@@ -61,7 +61,7 @@ class Scratch2OtherFile(object):
             return "_"+custom_block.data["mutation"]["proccode"].replace(" ", "_").replace("%", "_"), custom_block.data["mutation"]
         return "", {}
 
-    def toCodeFrom(self, head: Block):
+    def toCodeFrom(self, head: Block, with_comments: bool = True):
         func_name = f"opcode_{head.opcode}_"
         if func_name not in self.counts:
             self.counts[func_name] = 1
@@ -89,8 +89,8 @@ class Scratch2OtherFile(object):
         block = head
         while block.next:
             block = block.next
-            cd, indent = block.toCode(self.translator, indent, func_name, self.procedures_prototypes)
-            code += ("    " * indent) + cd + block.getComment(indent, translator=self.translator) + "\n" # 此处注释获取为普通调用，因此对于有自己木块，这里不加注释，在内部添加
+            cd, indent = block.toCode(self.translator, indent, func_name, self.procedures_prototypes, with_comments=with_comments)
+            code += ("    " * indent) + cd + block.getComment(indent, translator=self.translator, with_comments=with_comments) + "\n" # 此处注释获取为普通调用，因此对于有自己木块，这里不加注释，在内部添加
         code = re.sub(r'\n\s*\n', '\n', code)
         return code
 
@@ -202,7 +202,7 @@ class Scratch2OtherFile(object):
         code += "}"
         return code
 
-    def analyze(self, stage = None, print_progress=True):
+    def analyze(self, stage = None, print_progress=True, with_comments=True):
         data = f'''"""
 ScratchAnalyzer库生成
 注意：由于是机器翻译代码，本文件会有多处地方出现冗余的括号、多余的代码等。请不要以此文件来学习。
@@ -228,7 +228,7 @@ import ScratchRuntime as Scratch # 专用Scratch功能封装库
         data += "\n# 函数\n\n"
         # 生成函数代码
         for func in progress_generator(self.funcs, desc="正在生成函数"):
-            data += self.toCodeFrom(func) + "\n"
+            data += self.toCodeFrom(func, with_comments=with_comments) + "\n"
 
         # 添加主程序
         with open(assets_root_path / f"codeMain.{self.language}.tpl", "r", encoding="utf-8") as file:
@@ -318,8 +318,8 @@ import ScratchRuntime as Scratch # 专用Scratch功能封装库
 
         return f"target_{self.name}.py", data
 
-    def generate(self, output, stage = None, print_progress=True):
-        name, data = self.analyze(stage, print_progress=print_progress)
+    def generate(self, output, stage = None, print_progress=True, with_comments=True):
+        name, data = self.analyze(stage, print_progress=print_progress, with_comments=with_comments)
         with open(output / name, "w", encoding="utf-8") as file:
             file.write(data)
 
@@ -328,7 +328,7 @@ class Scratch(object):
         self.project = project
         self.public_id_to_variable_name = {}
 
-    def analyze(self, language="python", print_progress=True):
+    def analyze(self, language="python", print_progress=True, with_comments=True):
         result = {}
 
         language = language.lower()
@@ -369,7 +369,7 @@ class Scratch(object):
             if block.opcode in entries_block_opcodes:
                 stage_file.entries.append(block)
         # 开始生成舞台文件
-        stage_name, stage_data = stage_file.analyze(print_progress=print_progress)
+        stage_name, stage_data = stage_file.analyze(print_progress=print_progress, with_comments=with_comments)
         result["Stage"] = stage_name, stage_data
 
         # 生成剩余标准角色
@@ -403,7 +403,7 @@ class Scratch(object):
                 if block.opcode in entries_block_opcodes:
                     target_file.entries.append(block)
             # 开始生成舞台文件
-            file_name, file_data = target_file.analyze(stage=stage, print_progress=print_progress)
+            file_name, file_data = target_file.analyze(stage=stage, print_progress=print_progress, with_comments=with_comments)
             result[name] = file_name, file_data
         # 生成数据
         imports_code = ""
@@ -417,9 +417,9 @@ class Scratch(object):
 
         return result, (imports_code, inits)
 
-    def generate(self, output, language="python", print_progress=True):
+    def generate(self, output, language="python", print_progress=True, with_comments=True):
         output = Path(output)
-        result, (imports_code, inits) = self.analyze(language, print_progress)
+        result, (imports_code, inits) = self.analyze(language, print_progress, with_comments=with_comments)
         progress_generator = ColoredTqdm if print_progress else lambda x, **kwargs: x
         # 生成并复制每个角色文件
         for name, (file_name, file_data) in progress_generator(result.items(), desc="正在写入角色文件"):

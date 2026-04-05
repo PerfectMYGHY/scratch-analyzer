@@ -64,18 +64,19 @@ class Block(object):
         self.comment = block.get("comment")
         self.data = block
 
-    def getComment(self, indent: int, translator: WrappedTranslator, uniqueEnv: bool = False) -> str:
+    def getComment(self, indent: int, translator: WrappedTranslator, uniqueEnv: bool = False, with_comments: bool = True) -> str:
         """
         获取本积木块的注释
 
         :param indent: 注释若换行采用的缩进数
         :param translator: 翻译器，用于获取注释标志
         :param uniqueEnv: 是否在特殊环境，默认False，若为False，则在当前积木为带子块积木时返回无注释，否则获取注释
+        :param with_comments: 是否翻译注释
         :return: 注释代码
         """
-        if self.comment and (not uniqueEnv and self.opcode not in substack_opcodes):
+        if with_comments and self.comment and (not uniqueEnv and self.opcode not in substack_opcodes):
             text = self.target.comments[self.comment]["text"]
-            return f" {translator.one_line_comment} {text}".replace("\n", "    " * indent + f"{translator.one_line_comment} ") # 保证多行注释正常
+            return f" {translator.one_line_comment} Scratch原始注释:{text}".replace("\n", "    " * indent + f"{translator.one_line_comment} ") # 保证多行注释正常
         return ""
     
     def compute_relation(self):
@@ -99,7 +100,7 @@ class Block(object):
         ret += "}"
         return ret
 
-    def toCode(self, translator: WrappedTranslator, indent: int, func_name: str, procedures_prototypes: dict[str, dict]) -> tuple[str, int]:
+    def toCode(self, translator: WrappedTranslator, indent: int, func_name: str, procedures_prototypes: dict[str, dict], with_comments: bool = True) -> tuple[str, int]:
         if self.opcode not in substack_opcodes: # shadow指的是是否有SUBSTACK（子积木，就比如“如果”里包着的积木）
             try:
                 code = getattr(translator, self.opcode)
@@ -133,7 +134,7 @@ class Block(object):
                 warnings.warn("不支持的积木操作代码： %s，若警告不会停止则默认继续转换（无法翻译的代码将以注释替代！）" % self.opcode)
                 code = translator.error_throw.format(content=f'"未成功翻译的代码，操作代码：{self.opcode}，请手动翻译！"', comment=f"!!!不支持的积木操作代码： {self.opcode}，请手动翻译!!!")
             # 添加注释: 特殊代码需要特殊处理，原因请见Scratch.py或下方
-            code += self.getComment(indent + 1, translator, uniqueEnv=True)
+            code += self.getComment(indent + 1, translator, uniqueEnv=True, with_comments=with_comments)
             # 将参数格式化进去
             for name, inp in self.inputs.items():
                 if name in ("SUBSTACK", "SUBSTACK2"):
@@ -149,8 +150,8 @@ class Block(object):
                 head = cast(Block, self.target.blocks[self.inputs["SUBSTACK"].data[1]])
                 block = head
                 while True:
-                    cd, indent = block.toCode(translator, indent, func_name, procedures_prototypes)
-                    code += ("    " * indent) + cd + block.getComment(indent, translator) + "\n" # 此处注释获取为普通调用，因此对于有自己木块，这里不加注释，在内部添加
+                    cd, indent = block.toCode(translator, indent, func_name, procedures_prototypes, with_comments=with_comments)
+                    code += ("    " * indent) + cd + block.getComment(indent, translator, with_comments=with_comments) + "\n" # 此处注释获取为普通调用，因此对于有自己木块，这里不加注释，在内部添加
                     block = cast(Block | None, block.next)
                     if not block:
                         break
@@ -170,8 +171,8 @@ class Block(object):
                     head = cast(Block, self.target.blocks[self.inputs["SUBSTACK2"].data[1]])
                     block = head
                     while True:
-                        cd, indent = block.toCode(translator, indent, func_name, procedures_prototypes)
-                        code += ("    " * indent) + cd + block.getComment(indent, translator) + "\n" # 此处注释获取为普通调用，因此对于有自己木块，这里不加注释，在内部添加
+                        cd, indent = block.toCode(translator, indent, func_name, procedures_prototypes, with_comments=with_comments)
+                        code += ("    " * indent) + cd + block.getComment(indent, translator, with_comments=with_comments) + "\n" # 此处注释获取为普通调用，因此对于有自己木块，这里不加注释，在内部添加
                         block = cast(Block | None, block.next)
                         if not block:
                             break
