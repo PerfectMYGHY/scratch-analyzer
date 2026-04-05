@@ -3,4 +3,4 @@ from .Scratch import Scratch
 
 __all__ = ["Project", "Scratch"]
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
