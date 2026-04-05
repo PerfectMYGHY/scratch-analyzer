@@ -33,3 +33,6 @@ build/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+
+# 根目录的README.md符号链接
+README.md
