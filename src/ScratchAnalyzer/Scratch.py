@@ -343,6 +343,7 @@ class Scratch(object):
         :param language: 目标语言
         :param print_progress: 是否打印进度
         :param with_comments: 是否翻译注释
+        :param with_variables: 是否生成变量代码
         :return: 分析结果
         """
         result = {}
@@ -441,6 +442,7 @@ class Scratch(object):
         :param language: 目标语言
         :param print_progress: 是否打印进度
         :param with_comments: 是否翻译注释
+        :param with_variables: 是否生成变量代码
         :return: 无
         """
         output = Path(output)
