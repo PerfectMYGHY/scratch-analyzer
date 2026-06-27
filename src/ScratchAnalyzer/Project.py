@@ -146,7 +146,7 @@ class Block(object):
             code = re.sub(pattern, 'None', code)
             indent += 1
             code += "\n"
-            if self.inputs["SUBSTACK"].data[1]:
+            if "SUBSTACK" in self.inputs and self.inputs["SUBSTACK"].data and len(self.inputs["SUBSTACK"].data) > 1 and self.inputs["SUBSTACK"].data[1]:
                 head = cast(Block, self.target.blocks[self.inputs["SUBSTACK"].data[1]])
                 block = head
                 while True:
@@ -165,7 +165,7 @@ class Block(object):
                 code += ("    " * indent) + suffix + "\n"
             else:
                 code += ("    " * indent) + f"{translator.blank_substack}\n"
-            if "SUBSTACK2" in self.inputs:
+            if "SUBSTACK2" in self.inputs and self.inputs["SUBSTACK2"].data and len(self.inputs["SUBSTACK2"].data) > 1 and self.inputs["SUBSTACK2"].data[1]:
                 code += "{indent}{before}\n".format(indent="    " * (indent-1),before=getattr(translator, self.opcode+"_before_2"))
                 if self.inputs["SUBSTACK2"].data[1]:
                     head = cast(Block, self.target.blocks[self.inputs["SUBSTACK2"].data[1]])
