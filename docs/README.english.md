@@ -2,7 +2,7 @@
 
 中文版 README.md: [README.md](README.md)
 
-![Version](https://img.shields.io/badge/version-0.1.8-blue)
+![Version](https://img.shields.io/badge/version-0.1.9-blue)
 ![Status](https://img.shields.io/badge/status-alpha-orange)
 
 A Scratch parsing library. A Python package capable of analyzing Scratch code.

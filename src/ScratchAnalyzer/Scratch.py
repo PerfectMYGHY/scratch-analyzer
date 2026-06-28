@@ -302,8 +302,13 @@ import ScratchRuntime as Scratch # 专用Scratch功能封装库
                             break
                     if not found:
                         data = data.replace(f'!!![{key}][{value}]!!!', '"UnknownFunc"')
+                        last_func_name = None
                         warnings.warn("遇到未定义的自定义积木，用UnknownFunc代替，信息: proccode=%s" % value)
                 case "FUNC_METADATA":
+                    if last_func_name is None: # 检查上面这种情况
+                        warnings.warn("FUNC_METADATA 请求时 last_func_name 为 None，已跳过")
+                        data = data.replace(f'!!![{key}][{value}]!!!', '{}')
+                        continue
                     option = self.procedures_prototypes[last_func_name]
                     args = {}
                     for arg_idx, arg_id in enumerate(option["arg_ids"]):
@@ -311,6 +316,10 @@ import ScratchRuntime as Scratch # 专用Scratch功能封装库
                         args[arg_id] = arg_name
                     data = data.replace(f'!!![{key}][{value}]!!!', json.dumps(args, ensure_ascii=False))
                 case "ARGS_TO_GLOBAL":
+                    if last_func_name is None: # 检查上面这种情况
+                        warnings.warn("ARGS_TO_GLOBAL  请求时 last_func_name 为 None，已跳过")
+                        data = data.replace(f'!!![{key}][{value}]!!!', value)
+                        continue
                     option = self.procedures_prototypes[last_func_name]
                     args = {}
                     value2 = value
