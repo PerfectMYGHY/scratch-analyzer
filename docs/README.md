@@ -2,7 +2,7 @@
 
 English version README.md: [README.english.md](README.english.md)
 
-![Version](https://img.shields.io/badge/version-0.1.7-blue)
+![Version](https://img.shields.io/badge/version-0.1.8-blue)
 ![Status](https://img.shields.io/badge/status-alpha-orange)
 
 Scratch 解析库。一个使用Python制作的能够分析Python代码的软件包。

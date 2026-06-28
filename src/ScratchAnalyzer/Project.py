@@ -110,12 +110,21 @@ class Block(object):
             # 添加注释: 外部调用toCode后自动添加注释
             # 自定义函数执行的特殊处理
             if self.opcode == "procedures_call":
-                code = (code.replace("%[FUNC_NAME]%", "!!![FUNC_NAME_TO_GLOBAL][{proccode}]!!!".format(proccode=self.data["mutation"]["proccode"]))
-                        .replace("%[ARGS]%", "!!![ARGS_TO_GLOBAL][{args}]!!!").format(args=self.generateArgs(
-                    json.loads(self.data["mutation"]["argumentids"]),
-                    self.inputs,
-                    translator, func_name, procedures_prototypes
-                )))
+                code = code.replace(
+                    "%[FUNC_NAME]%",
+                    "!!![FUNC_NAME_TO_GLOBAL][{proccode}]!!!".format(
+                        proccode=self.data["mutation"]["proccode"]
+                    )
+                ).replace(
+                    "%[ARGS]%",
+                    "!!![ARGS_TO_GLOBAL][{args}]!!!".format(
+                        args=self.generateArgs(
+                            json.loads(self.data["mutation"]["argumentids"]),
+                            self.inputs,
+                            translator, func_name, procedures_prototypes
+                        )
+                    )
+                )
             for name, inp in self.inputs.items():
                 code = code.replace(f'%[{name}]%', inp.toCode(translator, func_name, procedures_prototypes))
             for name, field in self.fields.items():
