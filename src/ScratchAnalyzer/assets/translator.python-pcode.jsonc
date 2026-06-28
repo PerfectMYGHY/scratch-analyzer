@@ -26,6 +26,8 @@
     // 外观
     "looks_say": "say(%[MESSAGE]%)",
     "looks_sayforsecs": "say_for(%[MESSAGE]%, %[SECS]%)",
+    "looks_think": "think(%[MESSAGE]%)",
+    "looks_thinkforsecs": "think_for(%[MESSAGE]%, %[SECS]%)",
     "looks_switchcostumeto": "switch_costume_to(%[COSTUME]%)",
     "looks_nextcostume": "next_costume()",
     "looks_switchbackdropto": "switch_backdrop_to(%[BACKDROP]%)",

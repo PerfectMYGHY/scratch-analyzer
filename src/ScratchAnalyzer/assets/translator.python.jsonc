@@ -26,6 +26,8 @@
     // 外观
     "looks_say": "await Scratch.say(instance, %[MESSAGE]%)",
     "looks_sayforsecs": "await Scratch.say_for(instance, %[MESSAGE]%, %[SECS]%)",
+    "looks_think": "await Scratch.think(%[MESSAGE]%)",
+    "looks_thinkforsecs": "await Scratch.think_for(%[MESSAGE]%, %[SECS]%)",
     "looks_switchcostumeto": "await Scratch.switch_costume_to(instance, %[COSTUME]%)",
     "looks_nextcostume": "await Scratch.next_costume(instance)",
     "looks_switchbackdropto": "await Scratch.switch_backdrop_to(instance, %[BACKDROP]%)",

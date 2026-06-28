@@ -6,6 +6,7 @@ from .Cast import toCode
 import json
 import re
 from pathlib import Path
+import warnings
 
 from .Project import Block
 
@@ -275,7 +276,7 @@ import ScratchRuntime as Scratch # 专用Scratch功能封装库
                             hasVariable = True
                             break
                 if not hasVariable:
-                    code = toCode(value)
+                    code = toCode(value, self.translator)
             if code is None:
                 raise ValueError(f"无法处理的特殊全局替换请求！value=`{value}`")
             data = data.replace(f'!!![{key}][{value}]!!!', code)  # 替换
@@ -300,7 +301,8 @@ import ScratchRuntime as Scratch # 专用Scratch功能封装库
                             last_func_name = name
                             break
                     if not found:
-                        raise ValueError("未找到proccode对应的自定义函数！")
+                        data = data.replace(f'!!![{key}][{value}]!!!', '"UnknownFunc"')
+                        warnings.warn("遇到未定义的自定义积木，用UnknownFunc代替，信息: proccode=%s" % value)
                 case "FUNC_METADATA":
                     option = self.procedures_prototypes[last_func_name]
                     args = {}

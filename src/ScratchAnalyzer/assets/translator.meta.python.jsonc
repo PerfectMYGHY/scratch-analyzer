@@ -11,5 +11,8 @@
     "exit_function": "return", // 函数结束语句
     "is_current_clone": "if instance.is_clone:", // 判断是否是克隆体
     "one_line_comment": "#", // 单行注释以#开头
-    "frame_wait": "yield # 让出控制权" // 请看内部注释
+    "frame_wait": "yield # 让出控制权", // 请看内部注释
+    "positive_infinity": "float('inf')",
+    "negative_infinity": "float('-inf')",
+    "nan": "float('nan')"
 }

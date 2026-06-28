@@ -40,7 +40,7 @@ class Field(object):
         self.target = target
 
     def toCode(self, translator: WrappedTranslator):
-        return toCode(self.data[0])
+        return toCode(self.data[0], translator)
 
 class Block(object):
     def __init__(self, block, target):
@@ -82,8 +82,8 @@ class Block(object):
     def compute_relation(self):
         # 计算关联
         self.target = self.target
-        self.next = self.target.blocks[self._next] if self._next else None
-        self.parent = self.target.blocks[self._parent] if self._parent else None
+        self.next = self.target.blocks.get(self._next) if self._next else None
+        self.parent = self.target.blocks.get(self._parent) if self._parent else None
         self.inputs = {k: Input(v, self.target, k) for k, v in self._inputs.items()}
         self.fields = {k: Field(v, self.target) for k, v in self._fields.items()}
         self.computed = True
